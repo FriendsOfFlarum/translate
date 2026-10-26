@@ -6,7 +6,7 @@ import type ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import type { SettingsComponentOptions } from 'flarum/admin/components/AdminPage';
 import type Mithril from 'mithril';
 import { AI_DRIVERS, findDriver } from './drivers';
-import { driverName, envVar, fieldHelp, fieldLabel, optionLabel } from './driverLabels';
+import { driverIntro, driverName, envVar, fieldHelp, fieldLabel, optionLabel } from './driverLabels';
 import DeeplGlossarySettings from './DeeplGlossarySettings';
 import DriverTest from './DriverTest';
 import type { DriverField, DriverInfo } from './types';
@@ -17,7 +17,6 @@ export interface IDriverSettingsAttrs extends ComponentAttrs {
 
 const inputTypes: Record<string, string> = {
   string: 'text',
-  password: 'password',
   url: 'url',
   number: 'number',
   select: 'select',
@@ -38,6 +37,8 @@ export default class DriverSettings extends Component<IDriverSettingsAttrs> {
       <fieldset className="FofTranslateDriverSettings">
         <legend>{app.translator.trans('fof-translate.admin.settings.driver_section_heading', { driver: driverName(driver.name) })}</legend>
 
+        {driverIntro(driver.name) && <p className="helpText FofTranslateDriverSettings-intro">{driverIntro(driver.name)}</p>}
+
         {!driver.configured && (
           <Alert type="warning" dismissible={false} className="FofTranslateDriverSettings-alert">
             {app.translator.trans('fof-translate.admin.settings.driver_not_configured')}
@@ -49,8 +50,6 @@ export default class DriverSettings extends Component<IDriverSettingsAttrs> {
         {AI_DRIVERS.includes(driver.name) && this.aiFields()}
 
         {driver.name === 'deepl' && <DeeplGlossarySettings page={page} />}
-
-        {driver.name === 'google' && <p className="helpText">{app.translator.trans('fof-translate.admin.settings.google.notice')}</p>}
 
         <DriverTest page={page} driver={driver} />
       </fieldset>
@@ -86,8 +85,20 @@ export default class DriverSettings extends Component<IDriverSettingsAttrs> {
       entry.options = this.options(driver.name, key, field.options);
     }
 
+    // A masked text input, not type="password": browsers offer to save any password field as
+    // a login, prompting when the admin leaves the page. The data-* attributes keep password
+    // manager extensions away too.
     if (field.type === 'password') {
-      entry.autocomplete = 'new-password';
+      Object.assign(entry, {
+        type: 'text',
+        className: 'FofTranslateDriverSettings-secret',
+        autocomplete: 'off',
+        spellcheck: false,
+        'data-1p-ignore': true,
+        'data-lpignore': 'true',
+        'data-bwignore': true,
+        'data-form-type': 'other',
+      });
     }
 
     return page.buildSettingComponent(entry as SettingsComponentOptions);

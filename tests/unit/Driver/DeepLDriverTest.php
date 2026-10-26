@@ -83,6 +83,10 @@ class DeepLDriverTest extends DriverTestCase
         $this->assertArrayNotHasKey('tag_handling', $body);
     }
 
+    /**
+     * DeepL rejects bare EN and PT targets. Unsaved, the variant is the one the settings
+     * page shows as selected (Extend\Settings defaults in extend.php).
+     */
     #[Test]
     public function maps_bare_en_and_pt_targets_and_skips_glossary_without_source(): void
     {
@@ -92,11 +96,11 @@ class DeepLDriverTest extends DriverTestCase
         ]);
 
         $driver->translate(new TranslationRequest('Hallo', 'en'));
-        $this->assertSame('en-GB', $this->lastRequestBody()['target_lang']);
+        $this->assertSame('en-US', $this->lastRequestBody()['target_lang']);
         $this->assertArrayNotHasKey('source_lang', $this->lastRequestBody());
 
         $driver->translate(new TranslationRequest('Hallo', 'pt'));
-        $this->assertSame('pt-PT', $this->lastRequestBody()['target_lang']);
+        $this->assertSame('pt-BR', $this->lastRequestBody()['target_lang']);
         $this->assertArrayNotHasKey('glossary_id', $this->lastRequestBody());
     }
 

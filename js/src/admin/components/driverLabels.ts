@@ -95,6 +95,28 @@ const optionTexts: Record<string, () => string> = {
     app.translator.trans('fof-translate.admin.settings.deepl.model_type_options.prefer_quality_optimized', {}, true),
 };
 
+/**
+ * Opens in a new tab, so following it does not leave unsaved settings behind.
+ */
+function externalLink(href: string): Mithril.Vnode {
+  return m('a', { href, target: '_blank', rel: 'noopener noreferrer' });
+}
+
+const intros: Record<string, () => Mithril.Children> = {
+  claude: () => app.translator.trans('fof-translate.admin.settings.claude.intro', { a: externalLink('https://platform.claude.com/settings/keys') }),
+  openai: () => app.translator.trans('fof-translate.admin.settings.openai.intro', { a: externalLink('https://platform.openai.com/api-keys') }),
+  ollama: () => app.translator.trans('fof-translate.admin.settings.ollama.intro', { a: externalLink('https://ollama.com/download') }),
+  deepl: () => app.translator.trans('fof-translate.admin.settings.deepl.intro', { a: externalLink('https://www.deepl.com/products/api') }),
+  google: () => app.translator.trans('fof-translate.admin.settings.google.intro'),
+};
+
+/**
+ * What a bundled driver uses and where to get its API key; null for third-party drivers.
+ */
+export function driverIntro(driver: string): Mithril.Children {
+  return intros[driver]?.() ?? null;
+}
+
 export function fieldLabel(driver: string, key: string): Mithril.Children {
   return fieldTexts[`${driver}.${key}`]?.label() ?? key;
 }

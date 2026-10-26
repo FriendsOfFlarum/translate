@@ -248,13 +248,14 @@ class DeepLDriver implements BatchTranslationDriver
     }
 
     /**
-     * DeepL rejects bare "en" and "pt" as target languages.
+     * DeepL rejects bare "en" and "pt" as target languages. The fallbacks match the
+     * defaults in extend.php, so an unsaved setting means what the settings page shows.
      */
     protected function deeplTarget(string $target): string
     {
         return match ($target) {
-            'en' => in_array($choice = $this->stringSetting('en_choice'), self::EN_CHOICES, true) ? $choice : 'en-GB',
-            'pt' => in_array($choice = $this->stringSetting('pt_choice'), self::PT_CHOICES, true) ? $choice : 'pt-PT',
+            'en' => in_array($choice = $this->stringSetting('en_choice'), self::EN_CHOICES, true) ? $choice : 'en-US',
+            'pt' => in_array($choice = $this->stringSetting('pt_choice'), self::PT_CHOICES, true) ? $choice : 'pt-BR',
             default => $target,
         };
     }

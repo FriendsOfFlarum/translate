@@ -136,7 +136,7 @@ class SafeTranslatorTest extends TestCase
     #[Test]
     public function long_text_is_chunked_at_paragraph_boundaries(): void
     {
-        $paragraph = str_repeat('word ', 30)."**bold** end.";
+        $paragraph = str_repeat('word ', 30).'**bold** end.';
         $source = implode("\n\n", array_fill(0, 6, $paragraph));
         $translator = $this->translator(fn (string $t) => $t, maxChunk: 400);
 

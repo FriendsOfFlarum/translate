@@ -13,6 +13,7 @@ namespace FoF\Translate\Tests\integration\api;
 
 use Carbon\Carbon;
 use Flarum\Post\Post;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -60,8 +61,8 @@ class PostTranslateTest extends TestCase
     #[Test]
     public function cache_hit_makes_no_driver_call(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl'],
         ]]);
 
         $response = $this->translate('posts', 2, ['locale' => 'en']);
@@ -75,7 +76,7 @@ class PostTranslateTest extends TestCase
     #[Test]
     public function stale_row_is_retranslated(): void
     {
-        $this->prepareDatabase(['post_translations' => [
+        $this->prepareDatabase([PostTranslation::class => [
             ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Old</p></t>', 'provider' => 'deepl', 'update_needed' => 1],
         ]]);
 
@@ -94,8 +95,8 @@ class PostTranslateTest extends TestCase
     #[Test]
     public function refresh_without_permission_is_ignored(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl'],
         ]]);
 
         $response = $this->translate('posts', 2, ['locale' => 'en', 'refresh' => true]);
@@ -107,8 +108,8 @@ class PostTranslateTest extends TestCase
     #[Test]
     public function refresh_with_permission_retranslates(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl'],
         ]]);
 
         $response = $this->translate('posts', 2, ['locale' => 'en', 'refresh' => true], 1);
@@ -120,8 +121,8 @@ class PostTranslateTest extends TestCase
     #[Test]
     public function edited_row_is_never_retranslated_even_on_refresh(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Human</p></t>', 'provider' => 'manual', 'update_needed' => 1, 'edited_by' => 1],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Human</p></t>', 'update_needed' => 1, 'edited_by' => 1],
         ]]);
 
         $response = $this->translate('posts', 2, ['locale' => 'en', 'refresh' => true], 1);
@@ -244,8 +245,8 @@ class PostTranslateTest extends TestCase
     #[Test]
     public function translation_types_have_no_standalone_routes(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Visible</p></t>', 'provider' => 'deepl'],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Visible</p></t>'],
         ]]);
 
         $this->assertSame(404, $this->send($this->request('GET', '/api/post-translations/1', ['authenticatedAs' => 1]))->getStatusCode());
@@ -257,7 +258,7 @@ class PostTranslateTest extends TestCase
         FakeDriver::$echo = true;
 
         $this->prepareDatabase([Post::class => [
-            ['id' => 9, 'discussion_id' => 1, 'number' => 9, 'user_id' => 3, 'type' => 'comment', 'detected_lang' => 'de',
+            ['id' => 9, 'discussion_id' => 1, 'number' => 9, 'user_id' => 3, 'detected_lang' => 'de',
                 'content' => '<t>&lt;r&gt;&lt;URL url="javascript:alert(1)"&gt;click&lt;/URL&gt;&lt;/r&gt;</t>'],
         ]]);
 

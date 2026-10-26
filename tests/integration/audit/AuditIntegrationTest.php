@@ -14,6 +14,7 @@ namespace FoF\Translate\Tests\integration\audit;
 use Flarum\Foundation\Application;
 use FoF\Polls\Poll;
 use FoF\Polls\PollOption;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Application as ConsoleApplication;
@@ -168,9 +169,9 @@ class AuditIntegrationTest extends TestCase
     #[Test]
     public function pruning_is_logged_with_what_it_deleted_and_a_dry_run_is_not(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'de', 'content' => '<t><p>x</p></t>', 'provider' => 'deepl'],
-            ['id' => 2, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>x</p></t>', 'provider' => 'deepl'],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'de'],
+            ['id' => 2, 'post_id' => 2, 'language' => 'en'],
         ]]);
 
         $this->runCommand(['command' => 'fof:translate:prune', '--dry-run' => true]);
@@ -186,8 +187,8 @@ class AuditIntegrationTest extends TestCase
     #[Test]
     public function an_xml_repair_is_logged_with_its_count_and_a_dry_run_is_not(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Tom & Jerry</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Tom & Jerry</p></t>'],
         ]]);
 
         $this->runCommand(['command' => 'fof:translate:repair-xml']);

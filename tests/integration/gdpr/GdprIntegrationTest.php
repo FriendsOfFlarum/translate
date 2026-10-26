@@ -19,6 +19,10 @@ use Flarum\User\User;
 use FoF\Polls\Poll;
 use FoF\Polls\PollOption;
 use FoF\Translate\Gdpr\TranslationData;
+use FoF\Translate\Model\DiscussionTranslation;
+use FoF\Translate\Model\PollOptionTranslation;
+use FoF\Translate\Model\PollTranslation;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -34,15 +38,15 @@ class GdprIntegrationTest extends TestCase
         $this->prepareDatabase([
             Post::class => [
                 // A post by someone else in the same discussion, with its own translation.
-                ['id' => 5, 'discussion_id' => 1, 'number' => 4, 'user_id' => 2, 'type' => 'comment', 'content' => '<t><p>Ich bin jemand anderes.</p></t>', 'detected_lang' => 'de'],
+                ['id' => 5, 'discussion_id' => 1, 'number' => 4, 'user_id' => 2, 'content' => '<t><p>Ich bin jemand anderes.</p></t>', 'detected_lang' => 'de'],
             ],
-            'post_translations' => [
-                ['id' => 1, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>This is the first post in this discussion.</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 2, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Bonjour à tous</p></t>', 'provider' => 'claude', 'update_needed' => 0],
-                ['id' => 5, 'post_id' => 5, 'language' => 'en', 'content' => '<t><p>I am someone else.</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+            PostTranslation::class => [
+                ['id' => 1, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>This is the first post in this discussion.</p></t>'],
+                ['id' => 2, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Bonjour à tous</p></t>'],
+                ['id' => 5, 'post_id' => 5, 'language' => 'en', 'content' => '<t><p>I am someone else.</p></t>'],
             ],
-            'discussion_translations' => [
-                ['id' => 1, 'discussion_id' => 1, 'language' => 'en', 'translation' => 'A German title', 'provider' => 'deepl', 'update_needed' => 0],
+            DiscussionTranslation::class => [
+                ['id' => 1, 'discussion_id' => 1, 'language' => 'en', 'translation' => 'A German title'],
             ],
         ]);
     }
@@ -127,13 +131,13 @@ class GdprIntegrationTest extends TestCase
         $this->prepareDatabase([
             Poll::class => [['id' => 2, 'question' => 'Bleibt', 'post_id' => 5, 'user_id' => 2]],
             PollOption::class => [['id' => 2, 'poll_id' => 2, 'answer' => 'Ja']],
-            'poll_translations' => [
-                ['id' => 1, 'poll_id' => 1, 'language' => 'en', 'question' => 'Which colour?', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 2, 'poll_id' => 2, 'language' => 'en', 'question' => 'Stays', 'provider' => 'deepl', 'update_needed' => 0],
+            PollTranslation::class => [
+                ['id' => 1, 'poll_id' => 1, 'language' => 'en', 'question' => 'Which colour?'],
+                ['id' => 2, 'poll_id' => 2, 'language' => 'en', 'question' => 'Stays'],
             ],
-            'poll_option_translations' => [
-                ['id' => 1, 'option_id' => 1, 'language' => 'en', 'answer' => 'Red', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 2, 'option_id' => 2, 'language' => 'en', 'answer' => 'Yes', 'provider' => 'deepl', 'update_needed' => 0],
+            PollOptionTranslation::class => [
+                ['id' => 1, 'option_id' => 1, 'language' => 'en', 'answer' => 'Red'],
+                ['id' => 2, 'option_id' => 2, 'language' => 'en', 'answer' => 'Yes'],
             ],
         ]);
 

@@ -13,6 +13,7 @@ namespace FoF\Translate\Model;
 
 use Flarum\Database\AbstractModel;
 use Flarum\User\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -29,6 +30,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 abstract class AbstractTranslation extends AbstractModel
 {
+    use HasFactory;
+
     public $timestamps = true;
 
     protected $guarded = ['id'];

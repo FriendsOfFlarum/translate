@@ -11,6 +11,7 @@
 
 namespace FoF\Translate\Tests\integration\api;
 
+use Flarum\User\User;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -20,7 +21,7 @@ class AdminTest extends TestCase
     {
         parent::setUp();
 
-        $this->prepareDatabase(['users' => [$this->normalUser()]]);
+        $this->prepareDatabase([User::class => [$this->normalUser()]]);
     }
 
     #[Test]

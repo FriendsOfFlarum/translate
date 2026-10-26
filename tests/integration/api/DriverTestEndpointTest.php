@@ -11,6 +11,7 @@
 
 namespace FoF\Translate\Tests\integration\api;
 
+use Flarum\User\User;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\fixtures\SettingsFakeDriver;
 use FoF\Translate\Tests\integration\TestCase;
@@ -23,7 +24,7 @@ class DriverTestEndpointTest extends TestCase
     {
         parent::setUp();
 
-        $this->prepareDatabase(['users' => [$this->normalUser()]]);
+        $this->prepareDatabase([User::class => [$this->normalUser()]]);
     }
 
     protected function test(string $driver, ?array $settings = null, int $as = 1): ResponseInterface

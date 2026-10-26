@@ -46,15 +46,16 @@ class DetectionAdminTest extends TestCase
     }
 
     #[Test]
-    public function counts_report_totals_and_never_checked_rows(): void
+    public function counts_report_totals_never_checked_and_undetermined_rows(): void
     {
         $response = $this->send($this->request('GET', '/api/fof-translate/detection', ['authenticatedAs' => 1]));
 
         $this->assertSame(200, $response->getStatusCode());
-        // Comment posts 1,2,3,5,6,7,8 (4 is an event post); pending = NULL only (3, 5, 7).
+        // Comment posts 1,2,3,5,6,7,8 (4 is an event post): never checked = NULL (3, 5, 7);
+        // checked but undetermined = '' (6). Discussions: 2 and 3 never checked.
         $this->assertSame([
-            'posts' => ['total' => 7, 'pending' => 3],
-            'discussions' => ['total' => 3, 'pending' => 2],
+            'posts' => ['total' => 7, 'pending' => 3, 'undetermined' => 1],
+            'discussions' => ['total' => 3, 'pending' => 2, 'undetermined' => 0],
         ], $this->body($response)['data']);
     }
 

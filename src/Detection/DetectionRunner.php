@@ -13,6 +13,7 @@ namespace FoF\Translate\Detection;
 
 use Flarum\Post\CommentPost;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\Query\Builder;
 use InvalidArgumentException;
 
 /**
@@ -103,22 +104,28 @@ class DetectionRunner
     }
 
     /**
-     * @return array{posts: array{total: int, pending: int}, discussions: array{total: int, pending: int}}
+     * `pending` rows were never checked; `undetermined` ones were, but the detector could
+     * not tell (placeholder or mixed text, say), so they always offer translation.
+     *
+     * @return array{posts: array{total: int, pending: int, undetermined: int}, discussions: array{total: int, pending: int, undetermined: int}}
      */
     public function counts(): array
     {
-        $posts = fn () => $this->db->table('posts')->where('type', CommentPost::$type);
-        $discussions = fn () => $this->db->table('discussions');
-
         return [
-            'posts' => [
-                'total' => $posts()->count(),
-                'pending' => $posts()->whereNull('detected_lang')->count(),
-            ],
-            'discussions' => [
-                'total' => $discussions()->count(),
-                'pending' => $discussions()->whereNull('detected_lang')->count(),
-            ],
+            'posts' => $this->countsOf($this->db->table('posts')->where('type', CommentPost::$type)),
+            'discussions' => $this->countsOf($this->db->table('discussions')),
+        ];
+    }
+
+    /**
+     * @return array{total: int, pending: int, undetermined: int}
+     */
+    protected function countsOf(Builder $query): array
+    {
+        return [
+            'total' => (clone $query)->count(),
+            'pending' => (clone $query)->whereNull('detected_lang')->count(),
+            'undetermined' => (clone $query)->where('detected_lang', Language::UNDETERMINED)->count(),
         ];
     }
 

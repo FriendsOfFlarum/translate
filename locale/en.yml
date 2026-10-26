@@ -9,18 +9,19 @@ fof-translate:
       cancel_button: Cancel
       counts_failed_text: The detection status could not be loaded.
       detect_missing_button: Detect missing languages
-      discussions_pending_text: "{pending} of {total} discussions have no detected language."
+      discussions_status_text: "{total, plural, one {# discussion} other {# discussions}}: {detected} detected, {undetermined} undetermined, {pending} not yet checked."
       heading: Language detection
       help: "The translate button hides itself on content that is already in the reader's language, which needs the content's language to be known. New posts and discussions are detected automatically when they are saved, and polls are detected on the fly. Use this to detect content written before the extension was installed. Detection runs locally on your server: it makes no calls to the translation provider and costs nothing. The same can be done from the command line with {command}."
-      posts_pending_text: "{pending} of {total} posts have no detected language."
+      posts_status_text: "{total, plural, one {# post} other {# posts}}: {detected} detected, {undetermined} undetermined, {pending} not yet checked."
       progress_discussions_text: "Detecting discussions… {processed} of {expected}"
       progress_posts_text: "Detecting posts… {processed} of {expected}"
       redetect_all_button: Re-detect everything
       redetect_all_confirm: Detect the language of every post and discussion again, including those already detected? This can take a while on a large forum.
       refresh_button: Refresh
-      summary_cancelled_text: "Stopped. Checked {posts} posts and {discussions} discussions so far, and detected a language for {detected}."
-      summary_done_text: "Done. Checked {posts} posts and {discussions} discussions, and detected a language for {detected}."
-      summary_failed_text: "Detection stopped because of an error after checking {posts} posts and {discussions} discussions."
+      summary_cancelled_text: "Stopped. Checked {posts, plural, one {# post} other {# posts}} and {discussions, plural, one {# discussion} other {# discussions}} so far: {detected} detected, {undetermined} undetermined."
+      summary_done_text: "Done. Checked {posts, plural, one {# post} other {# posts}} and {discussions, plural, one {# discussion} other {# discussions}}: {detected} detected, {undetermined} undetermined."
+      summary_failed_text: "Detection stopped because of an error after checking {posts, plural, one {# post} other {# posts}} and {discussions, plural, one {# discussion} other {# discussions}}."
+      undetermined_help: Undetermined content was checked, but the detector could not tell its language, which is common for placeholder or test text. It always shows the translate button.
 
     # These translations are used in the permissions grid.
     permissions:

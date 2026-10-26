@@ -3,12 +3,13 @@ import Component, { type ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import LoadingIndicator from 'flarum/common/components/LoadingIndicator';
 import extractText from 'flarum/common/utils/extractText';
+import formatNumber from 'flarum/common/utils/formatNumber';
 import type ExtensionPage from 'flarum/admin/components/ExtensionPage';
 import type Mithril from 'mithril';
 
 export type DetectionType = 'posts' | 'discussions';
 
-type Counts = Record<DetectionType, { total: number; pending: number }>;
+type Counts = Record<DetectionType, { total: number; pending: number; undetermined: number }>;
 
 interface BatchResult {
   processed: number;
@@ -199,20 +200,15 @@ export default class LanguageDetection extends Component<ILanguageDetectionAttrs
     return (
       <div className="FofTranslateDetection-counts">
         {state.counts ? (
-          <ul>
-            <li>
-              {app.translator.trans('fof-translate.admin.detection.posts_pending_text', {
-                pending: state.counts.posts.pending,
-                total: state.counts.posts.total,
-              })}
-            </li>
-            <li>
-              {app.translator.trans('fof-translate.admin.detection.discussions_pending_text', {
-                pending: state.counts.discussions.pending,
-                total: state.counts.discussions.total,
-              })}
-            </li>
-          </ul>
+          <div>
+            <ul>
+              <li>{app.translator.trans('fof-translate.admin.detection.posts_status_text', this.statusParams(state.counts.posts))}</li>
+              <li>{app.translator.trans('fof-translate.admin.detection.discussions_status_text', this.statusParams(state.counts.discussions))}</li>
+            </ul>
+            {state.counts.posts.undetermined + state.counts.discussions.undetermined > 0 && (
+              <p className="helpText">{app.translator.trans('fof-translate.admin.detection.undetermined_help')}</p>
+            )}
+          </div>
         ) : (
           <p className="helpText">{app.translator.trans('fof-translate.admin.detection.counts_failed_text')}</p>
         )}
@@ -227,6 +223,18 @@ export default class LanguageDetection extends Component<ILanguageDetectionAttrs
         </Button>
       </div>
     );
+  }
+
+  /**
+   * `total` stays a number for the plural; the rest are formatted like the plural's `#`.
+   */
+  statusParams(count: Counts[DetectionType]): Record<string, number | string> {
+    return {
+      total: count.total,
+      detected: formatNumber(count.total - count.pending - count.undetermined),
+      undetermined: formatNumber(count.undetermined),
+      pending: formatNumber(count.pending),
+    };
   }
 
   progressView(): Mithril.Children {
@@ -265,10 +273,12 @@ export default class LanguageDetection extends Component<ILanguageDetectionAttrs
 
     if (!outcome || !totals) return null;
 
+    const detected = totals.posts.detected + totals.discussions.detected;
     const params = {
       posts: totals.posts.processed,
       discussions: totals.discussions.processed,
-      detected: totals.posts.detected + totals.discussions.detected,
+      detected: formatNumber(detected),
+      undetermined: formatNumber(totals.posts.processed + totals.discussions.processed - detected),
     };
 
     let text: Mithril.Children;

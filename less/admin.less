@@ -1,0 +1,165 @@
+.FofTranslateDriverSettings {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid var(--control-bg);
+  border-radius: var(--border-radius);
+
+  > legend {
+    padding: 0 6px;
+    font-weight: bold;
+  }
+}
+
+.FofTranslateDriverSettings-alert {
+  margin-bottom: 16px;
+}
+
+.FofTranslateDriverSettings-required {
+  color: var(--alert-error-bg, var(--muted-color));
+}
+
+.FofTranslateDriverSettings-env code {
+  overflow-wrap: anywhere;
+}
+
+.FofTranslateGlossary-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.FofTranslateGlossary-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px 2px 10px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+  color: var(--control-color);
+
+  .Button {
+    color: inherit;
+  }
+}
+
+.FofTranslateGlossary-add {
+  display: flex;
+  gap: 8px;
+  max-width: 500px;
+
+  .FormControl {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.FofTranslateDriverNotice {
+  margin-bottom: 24px;
+}
+
+.FofTranslateDetection-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-bottom: 10px;
+
+  ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+}
+
+.FofTranslateDetection-progress {
+  margin-bottom: 10px;
+  max-width: 500px;
+}
+
+.FofTranslateDetection-bar {
+  height: 8px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+  overflow: hidden;
+}
+
+.FofTranslateDetection-barFill {
+  height: 100%;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.FofTranslateDetection-summary {
+  margin-bottom: 10px;
+}
+
+.FofTranslateDetection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.FofTranslateDriverTest {
+  .helpText {
+    margin-top: 6px;
+  }
+}
+
+.FofTranslateDriverTest-result {
+  margin-top: 12px;
+}
+
+.FofTranslateDriverTest-result--ok {
+  padding: 12px 14px;
+  border: 1px solid var(--control-bg);
+  border-left: 3px solid var(--alert-success-bg);
+  border-radius: var(--border-radius);
+  overflow-wrap: anywhere;
+}
+
+.FofTranslateDriverTest-title {
+  margin: 0 0 10px;
+  font-weight: bold;
+
+  .icon {
+    color: var(--alert-success-bg);
+  }
+}
+
+.FofTranslateDriverTest-section {
+  margin-bottom: 10px;
+}
+
+.FofTranslateDriverTest-label {
+  margin-bottom: 2px;
+  color: var(--muted-color);
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.FofTranslateDriverTest-source {
+  color: var(--muted-color);
+  white-space: pre-wrap;
+}
+
+.FofTranslateDriverTest-translation {
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+.FofTranslateDriverTest-warning {
+  margin: 0;
+  color: var(--control-warning-color, var(--text-color));
+
+  .icon {
+    color: var(--control-warning-bg, var(--muted-color));
+  }
+}

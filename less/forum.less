@@ -1,0 +1,138 @@
+.TranslationBlock {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--control-bg);
+  border-radius: var(--border-radius);
+  overflow-wrap: anywhere;
+
+  &--loading {
+    opacity: 0.75;
+  }
+}
+
+.TranslationBlock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted-color);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.TranslationBlock-controls {
+  display: flex;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  .Button {
+    color: var(--muted-color);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--link-color);
+    }
+  }
+}
+
+.TranslationBlock-body {
+  margin-top: 6px;
+
+  .Post-body {
+    padding-bottom: 0;
+  }
+}
+
+.TranslationBlock-stale {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.TranslationBlock-footer,
+.TranslationMeta {
+  color: var(--muted-color);
+  font-size: 12px;
+}
+
+.TranslationBlock-footer {
+  margin-top: 6px;
+}
+
+// Hero: the control and the status get their own centred line under the title,
+// and inherit the hero's text colour so they read on tag-coloured heroes too.
+.DiscussionHero-items > li.item-fof-translate {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.DiscussionHero-translate .Button,
+.Button.DiscussionHero-translate,
+.DiscussionHero .TranslationStatus .Button {
+  color: inherit;
+  opacity: 0.8;
+
+  &:hover,
+  &:focus-visible {
+    color: inherit;
+    opacity: 1;
+  }
+}
+
+.TranslationStatus {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 8px;
+
+  .Button {
+    height: auto;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+  }
+}
+
+.TranslationStatus-text {
+  opacity: 0.8;
+
+  .icon {
+    margin-right: 5px;
+  }
+}
+
+.TranslationStatus-original::before {
+  content: '·';
+  margin-right: 8px;
+}
+
+.PollTranslationNotice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 4px 0 8px;
+  color: var(--muted-color);
+  font-size: 12px;
+
+  .Button {
+    font-size: 12px;
+  }
+}
+
+.PollTranslationNotice-title {
+  font-weight: bold;
+}
+
+@media @phone {
+  .TranslationBlock {
+    padding: 8px 10px;
+  }
+
+  .TranslationBlock-header {
+    align-items: flex-start;
+  }
+}

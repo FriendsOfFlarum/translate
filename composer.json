@@ -1,0 +1,129 @@
+{
+    "name": "fof/translate",
+    "description": "Click-to-translate for posts, discussion titles and polls, with DeepL, OpenAI, Claude and Ollama drivers.",
+    "keywords": [
+        "flarum",
+        "translate",
+        "translation",
+        "deepl",
+        "openai",
+        "claude",
+        "ollama",
+        "i18n"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/FriendsOfFlarum/translate/issues",
+        "source": "https://github.com/FriendsOfFlarum/translate",
+        "forum": "https://discuss.flarum.org"
+    },
+    "homepage": "https://friendsofflarum.org",
+    "funding": [
+        {
+            "type": "website",
+            "url": "https://opencollective.com/fof/donate"
+        }
+    ],
+    "require": {
+        "flarum/core": "^2.0",
+        "nitotm/efficient-language-detector": "^3.2",
+        "deeplcom/deepl-php": "^1.20",
+        "openai-php/client": "^0.21",
+        "anthropic-ai/sdk": "^1.3",
+        "stichoza/google-translate-php": "^5.3"
+    },
+    "conflict": {
+        "ianm/translate": "*"
+    },
+    "authors": [
+        {
+            "name": "IanM",
+            "email": "ian@flarum.org",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "FoF\\Translate\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "FoF Translate",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-language",
+                "color": "#fff",
+                "backgroundColor": "#0072e3"
+            },
+            "optional-dependencies": [
+                "fof/polls",
+                "flarum/gdpr",
+                "flarum/audit"
+            ]
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": true,
+                "css": true,
+                "locale": true,
+                "gitConf": true,
+                "githubActions": true,
+                "prettier": true,
+                "typescript": true,
+                "bundlewatch": false,
+                "frontendTesting": true,
+                "backendTesting": true,
+                "phpstan": true,
+                "editorConfig": true,
+                "styleci": true
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload-dev": {
+        "psr-4": {
+            "FoF\\Translate\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@test:integration"
+        ],
+        "test:unit": "phpunit -c tests/phpunit.unit.xml",
+        "test:unit:filter": "phpunit -c tests/phpunit.unit.xml --filter",
+        "test:integration": "phpunit -c tests/phpunit.integration.xml",
+        "test:integration:filter": "phpunit -c tests/phpunit.integration.xml --filter",
+        "test:setup": "@php tests/integration/setup.php",
+        "analyse:phpstan": "phpstan analyse",
+        "clear-cache:phpstan": "phpstan clear-result-cache"
+    },
+    "scripts-descriptions": {
+        "test": "Runs all tests.",
+        "test:unit": "Runs all unit tests.",
+        "test:unit:filter": "Runs unit tests whose name matches: composer test:unit:filter -- ClassName",
+        "test:integration": "Runs all integration tests.",
+        "test:integration:filter": "Runs integration tests whose name matches: composer test:integration:filter -- ClassName",
+        "test:setup": "Sets up a database for use with integration tests. Execute this only once.",
+        "analyse:phpstan": "Run static analysis",
+        "clear-cache:phpstan": "Clear the PHPStan result cache"
+    },
+    "require-dev": {
+        "flarum/testing": "^2.0",
+        "fof/polls": "^3.0",
+        "flarum/phpstan": "^2.0",
+        "flarum/gdpr": "^2.0",
+        "flarum/audit": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}

@@ -32,6 +32,12 @@ php flarum cache:clear
 
 Then enable **FoF Translate** in the admin panel, select a driver and enter its settings.
 
+Composer may ask whether you trust `php-http/discovery` to run code. The DeepL, OpenAI and Claude SDKs depend on it. Answering `y` is safe, and so is `n`: Flarum already provides the HTTP client the plugin would otherwise install. To answer once for good:
+
+```sh
+composer config allow-plugins.php-http/discovery true
+```
+
 ## Updating
 
 ```sh

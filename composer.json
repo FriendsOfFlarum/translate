@@ -54,8 +54,8 @@
             "category": "feature",
             "icon": {
                 "name": "fas fa-language",
-                "color": "#fff",
-                "backgroundColor": "#0072e3"
+                "backgroundColor": "#e74c3c",
+                "color": "#fff"
             },
             "optional-dependencies": [
                 "fof/polls",

@@ -48,12 +48,14 @@ fof-translate:
           high: High
           low: Low
           medium: Medium
+        intro: "Uses Anthropic's Claude models. Create an API key in the <a>Claude Console</a>."
         model_help: Opus gives the best translations, Haiku is the cheapest. Sonnet sits in between.
         model_label: Model
       deepl:
         api_key_label: DeepL API key
         en_choice_help: DeepL requires a regional variant when translating into English.
         en_choice_label: English variant
+        intro: "Uses DeepL machine translation. The free and Pro API plans both work: <a>get a DeepL API key</a>."
         pt_choice_help: DeepL requires a regional variant when translating into Portuguese.
         pt_choice_label: Portuguese variant
         formality_help: Whether translations should lean formal or informal, for the languages that support it.
@@ -100,12 +102,13 @@ fof-translate:
         placeholder: Add a term…
         remove_button: "Remove {term}"
       google:
-        notice: "Uses Google Translate's free web endpoint, so no account or API key is needed. It is unofficial and best-effort: Google may rate-limit or block busy servers, and quality is below the AI drivers. Formatting is checked after every translation, and a translation that cannot be verified is not stored. Recommended for trying the extension out or for small forums."
+        intro: "Uses Google Translate's free web endpoint, so no account or API key is needed. It is unofficial and best-effort: Google may rate-limit or block busy servers, and quality is below the AI drivers. Formatting is checked after every translation, and a translation that cannot be verified is not stored. Recommended for trying the extension out or for small forums."
       ollama:
         api_key_help: "Optional bearer token, for an Ollama server behind an authenticating reverse proxy. Can also be set with the {env} environment variable."
         api_key_label: API token
         base_url_help: Address of your Ollama server, for example http://localhost:11434.
         base_url_label: Server URL
+        intro: "Runs models on your own server, so content never leaves it, and needs no API key. <a>Install Ollama</a> and pull a model first."
         model_help: Name of an installed Ollama model, for example llama3.1.
         model_label: Model
         think_help: For reasoning models such as gpt-oss or qwen3. Low is much faster for translation; Off is ignored by some models (gpt-oss), which always reason.
@@ -117,6 +120,7 @@ fof-translate:
           "off": "Off"
       openai:
         api_key_label: OpenAI API key
+        intro: "Uses OpenAI's GPT models. Create an API key on the <a>OpenAI platform</a>."
         max_tokens_help: Upper limit on the length of each translation.
         max_tokens_label: Maximum tokens
         model_help: The OpenAI model used for translation.

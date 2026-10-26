@@ -11,7 +11,6 @@
 
 namespace FoF\Translate\Tests\integration;
 
-use Carbon\Carbon;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Flarum\Extend\ExtenderInterface;
@@ -75,22 +74,20 @@ abstract class TestCase extends BaseTestCase
 
     protected function seedForum(): void
     {
-        $now = Carbon::now()->toDateTimeString();
-
         $this->prepareDatabase([
             User::class => [
                 $this->normalUser(),
-                ['id' => 3, 'username' => 'author', 'email' => 'author@machine.local', 'is_email_confirmed' => 1],
+                ['id' => 3, 'username' => 'author', 'email' => 'author@machine.local'],
             ],
             Discussion::class => [
-                ['id' => 1, 'title' => 'Ein deutscher Titel', 'created_at' => $now, 'user_id' => 3, 'first_post_id' => 1, 'comment_count' => 2, 'last_post_number' => 2, 'detected_lang' => 'de'],
-                ['id' => 2, 'title' => 'Private', 'created_at' => $now, 'user_id' => 3, 'first_post_id' => 3, 'comment_count' => 1, 'is_private' => 1],
+                ['id' => 1, 'title' => 'Ein deutscher Titel', 'user_id' => 3, 'first_post_id' => 1, 'comment_count' => 2, 'last_post_number' => 2, 'detected_lang' => 'de'],
+                ['id' => 2, 'title' => 'Private', 'user_id' => 3, 'first_post_id' => 3, 'is_private' => 1],
             ],
             Post::class => [
-                ['id' => 1, 'discussion_id' => 1, 'number' => 1, 'created_at' => $now, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Das ist der erste Beitrag in dieser Diskussion.</p></t>', 'detected_lang' => 'de'],
-                ['id' => 2, 'discussion_id' => 1, 'number' => 2, 'created_at' => $now, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Hallo zusammen, wie geht es euch heute?</p></t>', 'detected_lang' => 'de'],
-                ['id' => 3, 'discussion_id' => 2, 'number' => 1, 'created_at' => $now, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Secret</p></t>', 'is_private' => 1],
-                ['id' => 4, 'discussion_id' => 1, 'number' => 3, 'created_at' => $now, 'user_id' => 3, 'type' => 'discussionRenamed', 'content' => '["a","b"]'],
+                ['id' => 1, 'discussion_id' => 1, 'number' => 1, 'user_id' => 3, 'content' => '<t><p>Das ist der erste Beitrag in dieser Diskussion.</p></t>', 'detected_lang' => 'de'],
+                ['id' => 2, 'discussion_id' => 1, 'number' => 2, 'user_id' => 3, 'content' => '<t><p>Hallo zusammen, wie geht es euch heute?</p></t>', 'detected_lang' => 'de'],
+                ['id' => 3, 'discussion_id' => 2, 'number' => 1, 'user_id' => 3, 'content' => '<t><p>Secret</p></t>', 'is_private' => 1],
+                ['id' => 4, 'discussion_id' => 1, 'number' => 3, 'user_id' => 3, 'type' => 'discussionRenamed', 'content' => '["a","b"]'],
             ],
         ]);
     }

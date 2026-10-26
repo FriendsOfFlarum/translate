@@ -26,17 +26,17 @@ class DetectionAdminTest extends TestCase
 
         $this->prepareDatabase([
             \Flarum\Post\Post::class => [
-                ['id' => 5, 'discussion_id' => 1, 'number' => 4, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>This is a fairly long English sentence about installing extensions.</p></t>', 'detected_lang' => null],
-                ['id' => 6, 'discussion_id' => 1, 'number' => 5, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>ok</p></t>', 'detected_lang' => ''],
-                ['id' => 7, 'discussion_id' => 1, 'number' => 6, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Questo è un messaggio scritto in italiano per la prova.</p></t>', 'detected_lang' => null],
+                ['id' => 5, 'discussion_id' => 1, 'number' => 4, 'user_id' => 3, 'content' => '<t><p>This is a fairly long English sentence about installing extensions.</p></t>', 'detected_lang' => null],
+                ['id' => 6, 'discussion_id' => 1, 'number' => 5, 'user_id' => 3, 'content' => '<t><p>ok</p></t>', 'detected_lang' => ''],
+                ['id' => 7, 'discussion_id' => 1, 'number' => 6, 'user_id' => 3, 'content' => '<t><p>Questo è un messaggio scritto in italiano per la prova.</p></t>', 'detected_lang' => null],
             ],
             \Flarum\Discussion\Discussion::class => [
                 // Short title: falls back to the first post's text.
-                ['id' => 3, 'title' => 'Hilfe', 'user_id' => 3, 'first_post_id' => 8, 'comment_count' => 1, 'detected_lang' => null],
+                ['id' => 3, 'title' => 'Hilfe', 'user_id' => 3, 'first_post_id' => 8, 'detected_lang' => null],
             ],
         ]);
         $this->prepareDatabase([\Flarum\Post\Post::class => [
-            ['id' => 8, 'discussion_id' => 3, 'number' => 1, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Ich habe versucht, die Erweiterung zu installieren, aber es funktioniert leider überhaupt nicht.</p></t>', 'detected_lang' => 'de'],
+            ['id' => 8, 'discussion_id' => 3, 'number' => 1, 'user_id' => 3, 'content' => '<t><p>Ich habe versucht, die Erweiterung zu installieren, aber es funktioniert leider überhaupt nicht.</p></t>', 'detected_lang' => 'de'],
         ]]);
     }
 

@@ -18,6 +18,8 @@ use Flarum\Api\Schema;
 use Flarum\Discussion\Discussion;
 use Flarum\Extend;
 use Flarum\Post\Post;
+use FoF\Translate\Model\DiscussionTranslation;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -36,12 +38,12 @@ class BulkTranslationsTest extends TestCase
 
         $this->seedForum();
         $this->prepareDatabase([
-            'post_translations' => [
-                ['id' => 1, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>Cached first post</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 2, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Stale reply</p></t>', 'provider' => 'deepl', 'update_needed' => 1],
+            PostTranslation::class => [
+                ['id' => 1, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>Cached first post</p></t>'],
+                ['id' => 2, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Stale reply</p></t>', 'update_needed' => 1],
             ],
-            'discussion_translations' => [
-                ['id' => 1, 'discussion_id' => 1, 'language' => 'en', 'translation' => 'Cached title', 'provider' => 'deepl', 'update_needed' => 0],
+            DiscussionTranslation::class => [
+                ['id' => 1, 'discussion_id' => 1, 'language' => 'en', 'translation' => 'Cached title'],
             ],
         ]);
     }
@@ -97,14 +99,14 @@ class BulkTranslationsTest extends TestCase
         // Seed before touching database(): prepareDatabase() is a no-op once the app has booted (FND-192).
         $this->prepareDatabase([
             \Flarum\Discussion\Discussion::class => [
-                ['id' => 3, 'title' => 'Eine andere Diskussion', 'user_id' => 3, 'first_post_id' => 9, 'comment_count' => 1],
+                ['id' => 3, 'title' => 'Eine andere Diskussion', 'user_id' => 3, 'first_post_id' => 9],
             ],
             \Flarum\Post\Post::class => [
-                ['id' => 9, 'discussion_id' => 3, 'number' => 1, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Anderswo</p></t>'],
+                ['id' => 9, 'discussion_id' => 3, 'number' => 1, 'user_id' => 3, 'content' => '<t><p>Anderswo</p></t>'],
             ],
-            'post_translations' => [
-                ['id' => 3, 'post_id' => 3, 'language' => 'en', 'content' => '<t><p>Secret</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 9, 'post_id' => 9, 'language' => 'en', 'content' => '<t><p>Elsewhere</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+            PostTranslation::class => [
+                ['id' => 3, 'post_id' => 3, 'language' => 'en', 'content' => '<t><p>Secret</p></t>'],
+                ['id' => 9, 'post_id' => 9, 'language' => 'en', 'content' => '<t><p>Elsewhere</p></t>'],
             ],
         ]);
         $this->database()->table('posts')->where('id', 2)->update(['hidden_at' => '2026-10-25 10:00:00']);

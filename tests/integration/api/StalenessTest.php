@@ -11,6 +11,8 @@
 
 namespace FoF\Translate\Tests\integration\api;
 
+use FoF\Translate\Model\DiscussionTranslation;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,14 +26,14 @@ class StalenessTest extends TestCase
         $this->seedForum();
 
         $this->prepareDatabase([
-            'post_translations' => [
-                ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Auto</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 2, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Humain</p></t>', 'provider' => 'manual', 'update_needed' => 0, 'edited_by' => 1],
-                ['id' => 3, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>Other post</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
+            PostTranslation::class => [
+                ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Auto</p></t>'],
+                ['id' => 2, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Humain</p></t>', 'edited_by' => 1],
+                ['id' => 3, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>Other post</p></t>'],
             ],
-            'discussion_translations' => [
-                ['id' => 1, 'discussion_id' => 1, 'language' => 'en', 'translation' => 'Auto', 'provider' => 'deepl', 'update_needed' => 0],
-                ['id' => 2, 'discussion_id' => 1, 'language' => 'fr', 'translation' => 'Humain', 'provider' => 'manual', 'update_needed' => 0, 'edited_by' => 1],
+            DiscussionTranslation::class => [
+                ['id' => 1, 'discussion_id' => 1, 'language' => 'en', 'translation' => 'Auto'],
+                ['id' => 2, 'discussion_id' => 1, 'language' => 'fr', 'translation' => 'Humain', 'edited_by' => 1],
             ],
         ]);
     }

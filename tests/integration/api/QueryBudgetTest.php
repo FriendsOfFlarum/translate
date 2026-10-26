@@ -11,6 +11,7 @@
 
 namespace FoF\Translate\Tests\integration\api;
 
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -26,8 +27,8 @@ class QueryBudgetTest extends TestCase
         parent::setUp();
 
         $this->seedForum();
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>', 'provider' => 'deepl'],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Cached</p></t>'],
         ]]);
     }
 

@@ -12,6 +12,7 @@
 namespace FoF\Translate\Tests\integration\console;
 
 use Flarum\Foundation\Application;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\integration\TestCase;
 use PHPUnit\Framework\Attributes\Test;
@@ -49,10 +50,10 @@ class CommandsTest extends TestCase
     {
         $this->prepareDatabase([
             \Flarum\Post\Post::class => [
-                ['id' => 5, 'discussion_id' => 1, 'number' => 4, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>This is a fairly long English sentence about installing extensions.</p></t>', 'detected_lang' => null],
-                ['id' => 6, 'discussion_id' => 1, 'number' => 5, 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>ok</p></t>', 'detected_lang' => null],
+                ['id' => 5, 'discussion_id' => 1, 'number' => 4, 'user_id' => 3, 'content' => '<t><p>This is a fairly long English sentence about installing extensions.</p></t>', 'detected_lang' => null],
+                ['id' => 6, 'discussion_id' => 1, 'number' => 5, 'user_id' => 3, 'content' => '<t><p>ok</p></t>', 'detected_lang' => null],
                 // No text at all, only a link: nothing to attribute to any language.
-                ['id' => 7, 'discussion_id' => 1, 'number' => 6, 'user_id' => 3, 'type' => 'comment', 'content' => '<r><URL url="https://example.com/a.png">https://example.com/a.png</URL></r>', 'detected_lang' => null],
+                ['id' => 7, 'discussion_id' => 1, 'number' => 6, 'user_id' => 3, 'content' => '<r><URL url="https://example.com/a.png">https://example.com/a.png</URL></r>', 'detected_lang' => null],
             ],
         ]);
         $this->database()->table('users')->where('id', 3)->update(['preferences' => json_encode(['locale' => 'de'])]);
@@ -97,11 +98,11 @@ class CommandsTest extends TestCase
     #[Test]
     public function prune_removes_same_language_rows(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'de', 'content' => '<t><p>x</p></t>', 'provider' => 'deepl'],
-            ['id' => 2, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>x</p></t>', 'provider' => 'deepl'],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'de'],
+            ['id' => 2, 'post_id' => 2, 'language' => 'en'],
             // Same language, but written by a human: kept.
-            ['id' => 3, 'post_id' => 1, 'language' => 'de', 'content' => '<t><p>x</p></t>', 'provider' => 'manual', 'edited_by' => 1],
+            ['id' => 3, 'post_id' => 1, 'language' => 'de', 'edited_by' => 1],
         ]]);
 
         $this->runCommand(['command' => 'fof:translate:prune', '--dry-run' => true]);
@@ -114,10 +115,10 @@ class CommandsTest extends TestCase
     #[Test]
     public function repair_xml_marks_corrupted_rows_but_not_edited_ones(): void
     {
-        $this->prepareDatabase(['post_translations' => [
-            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Fine &amp; dandy</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
-            ['id' => 2, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Tom & Jerry</p></t>', 'provider' => 'deepl', 'update_needed' => 0],
-            ['id' => 3, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>a < b</p></t>', 'provider' => 'deepl', 'update_needed' => 0, 'edited_by' => 1],
+        $this->prepareDatabase([PostTranslation::class => [
+            ['id' => 1, 'post_id' => 2, 'language' => 'en', 'content' => '<t><p>Fine &amp; dandy</p></t>'],
+            ['id' => 2, 'post_id' => 2, 'language' => 'fr', 'content' => '<t><p>Tom & Jerry</p></t>'],
+            ['id' => 3, 'post_id' => 1, 'language' => 'en', 'content' => '<t><p>a < b</p></t>', 'edited_by' => 1],
         ]]);
 
         $this->runCommand(['command' => 'fof:translate:repair-xml']);

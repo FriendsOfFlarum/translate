@@ -88,6 +88,7 @@ return [
         ->default('fof-translate.glossary', '[]')
         ->default('fof-translate.deepl.formality', 'default')
         ->default('fof-translate.deepl.en_choice', 'en-US')
+        ->default('fof-translate.deepl.pt_choice', 'pt-BR')
         ->default('fof-translate.deepl.model_type', 'prefer_quality_optimized')
         ->default('fof-translate.openai.model', 'gpt-4o')
         ->default('fof-translate.openai.max_tokens', 4096)

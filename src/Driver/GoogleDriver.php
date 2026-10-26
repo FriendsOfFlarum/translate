@@ -23,7 +23,7 @@ use Stichoza\GoogleTranslate\Exceptions\TranslationRequestException;
 use Throwable;
 
 /**
- * Free Google Translate (the public `gtx` web client via stichoza/google-translate-php). No key,
+ * Free Google Translate (the public web client via stichoza/google-translate-php). No key,
  * no SLA, and Google may block a server at any time. Google mangles Markdown structure, so every
  * response goes through SafeTranslator, which only ever returns structurally verified text.
  */
@@ -190,8 +190,8 @@ class GoogleDriver implements BatchTranslationDriver
 
     protected function client(): GoogleClient
     {
-        return $this->client ??= (new GoogleClient(options: ['timeout' => self::TIMEOUT, 'connect_timeout' => 10]))
-            ->setClient('gtx');
+        // Leave the `client` param to the library: Google answers every `gtx` request with 429 (Stichoza/google-translate-php#225).
+        return $this->client ??= new GoogleClient(options: ['timeout' => self::TIMEOUT, 'connect_timeout' => 10]);
     }
 
     protected function normaliseLanguage(?string $code): ?string

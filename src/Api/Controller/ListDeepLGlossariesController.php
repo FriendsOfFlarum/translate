@@ -8,13 +8,14 @@
  * For the full copyright and license information, please view the LICENSE.md
  * file that was distributed with this source code.
  */
+
 namespace FoF\Translate\Api\Controller;
 
 use Flarum\Foundation\ValidationException;
 use Flarum\Http\RequestUtil;
-use Illuminate\Contracts\Cache\Repository as Cache;
 use FoF\Translate\Driver\DeepLDriver;
 use FoF\Translate\Driver\DriverManager;
+use Illuminate\Contracts\Cache\Repository as Cache;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

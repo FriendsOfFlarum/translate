@@ -13,8 +13,8 @@ namespace FoF\Translate\Console;
 
 use FoF\Translate\Detection\DetectionRunner;
 use FoF\Translate\Event\LanguageDetectionRun;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Events\Dispatcher;
 
 /**
  * Local ELD backfill through DetectionRunner (the admin "detect" button uses the same

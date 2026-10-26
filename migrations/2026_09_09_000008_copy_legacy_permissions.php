@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE.md
  * file that was distributed with this source code.
  */
+
 use Illuminate\Database\Schema\Builder;
 
 // Copy-only: grants of ianm/translate's abilities are duplicated under the new keys

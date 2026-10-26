@@ -149,7 +149,7 @@ class ContentProtectorTest extends TestCase
     #[Test]
     public function nested_quotes_keep_inner_text_translatable(): void
     {
-        $source = "[quote=\"A\"][quote=\"B\"]inner text[/quote]outer text[/quote]";
+        $source = '[quote="A"][quote="B"]inner text[/quote]outer text[/quote]';
         $content = $this->protector()->protect($source);
 
         $this->assertStringNotContainsString('[quote', $content->text);
@@ -160,7 +160,7 @@ class ContentProtectorTest extends TestCase
         $translated = str_replace(['inner text', 'outer text'], ['innerer Text', 'äußerer Text'], $content->text);
 
         $this->assertSame(
-            "[quote=\"A\"][quote=\"B\"]innerer Text[/quote]äußerer Text[/quote]",
+            '[quote="A"][quote="B"]innerer Text[/quote]äußerer Text[/quote]',
             $this->protector()->restore($translated, $content)
         );
     }

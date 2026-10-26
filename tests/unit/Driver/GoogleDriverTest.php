@@ -50,26 +50,24 @@ class GoogleDriverTest extends DriverTestCase
         };
     }
 
+    /**
+     * The driver's own client() configuration, with only the Guzzle client swapped for `$http`.
+     */
     protected function real(Client $http): GoogleDriver
     {
-        $client = (new class(options: []) extends GoogleClient {
-            public function useHttp(Client $http): static
-            {
-                $this->client = $http;
-
-                return $this;
-            }
-        })->useHttp($http);
-
-        return new class(new NullLogger(), $client) extends GoogleDriver {
-            public function __construct($logger, protected GoogleClient $fakeClient)
+        return new class(new NullLogger(), $http) extends GoogleDriver {
+            public function __construct($logger, protected Client $http)
             {
                 parent::__construct($logger);
             }
 
             protected function client(): GoogleClient
             {
-                return $this->fakeClient->setClient('gtx');
+                $client = parent::client();
+                $http = $this->http;
+                (fn () => $this->client = $http)->call($client);
+
+                return $client;
             }
         };
     }
@@ -160,7 +158,7 @@ class GoogleDriverTest extends DriverTestCase
     }
 
     #[Test]
-    public function parses_gtx_json_and_keeps_commas_in_sparse_responses(): void
+    public function parses_json_and_keeps_commas_in_sparse_responses(): void
     {
         $driver = $this->real($this->mockHttp([
             new Response(200, [], '[[["Hallo Welt","Hello world",null,null,10]],null,"en",null,null,null,null,[]]'),
@@ -172,13 +170,23 @@ class GoogleDriverTest extends DriverTestCase
         $this->assertSame('en', $first->detectedSourceLanguage);
 
         $query = $this->lastRequest()->getUri()->getQuery();
-        $this->assertStringContainsString('client=gtx', $query);
         $this->assertStringContainsString('tl=de', $query);
         $this->assertStringContainsString('sl=auto', $query);
 
         $second = $driver->translate(new TranslationRequest('Hello,, [,world', 'de'));
         $this->assertSame('Hallo,, [,Welt', $second->text);
         $this->assertSame('zh', $second->detectedSourceLanguage);
+    }
+
+    #[Test]
+    public function requests_never_go_out_as_the_gtx_client(): void
+    {
+        // Google answers every client=gtx request with 429 (Stichoza/google-translate-php#225).
+        $driver = $this->real($this->mockHttp([new Response(200, [], '[[["Hallo","Hello",null,null,10]],null,"en"]')]));
+
+        $driver->translate(new TranslationRequest('Hello', 'de'));
+
+        $this->assertStringNotContainsString('client=gtx', $this->lastRequest()->getUri()->getQuery());
     }
 
     #[Test]

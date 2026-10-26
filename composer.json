@@ -31,7 +31,7 @@
         "deeplcom/deepl-php": "^1.20",
         "openai-php/client": "^0.21",
         "anthropic-ai/sdk": "^1.3",
-        "stichoza/google-translate-php": "^5.3"
+        "stichoza/google-translate-php": "^5.3.5"
     },
     "conflict": {
         "ianm/translate": "*"

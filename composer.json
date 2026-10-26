@@ -119,7 +119,8 @@
         "fof/polls": "^3.0",
         "flarum/phpstan": "^2.0",
         "flarum/gdpr": "^2.0",
-        "flarum/audit": "^2.0"
+        "flarum/audit": "^2.0",
+        "flarum/mentions": "^2.0"
     },
     "config": {
         "allow-plugins": {

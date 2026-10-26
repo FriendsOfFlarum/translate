@@ -161,6 +161,32 @@ describe('translating a whole thread from the hero', () => {
     expect(TranslationState.peek(second)?.showing).toBe(true);
   });
 
+  test('a long thread is looked up in batches the server accepts, so cached posts never cost a request each', async () => {
+    const d = discussion('de');
+    const posts = Array.from({ length: 120 }, (_, i) => post(d, i + 1, 'de'));
+
+    const request = jest.spyOn(app, 'request').mockImplementation(((options: { url: string; body?: any }) => {
+      if (!BULK.test(options.url)) return Promise.resolve(payloadFor(options.url, 'en'));
+
+      const ids: string[] = options.body.data.attributes.posts;
+
+      return Promise.resolve({
+        data: ids.map((id) => ({ type: 'post-translations', id: `c${id}`, attributes: { postId: id, language: 'en', contentHtml: '<p>cached</p>', provider: 'deepl' } })),
+      });
+    }) as never);
+
+    await translateThread(d, 'en');
+
+    const bulkSizes = request.mock.calls
+      .map((call) => call[0] as { url: string; body?: any })
+      .filter((options) => BULK.test(options.url))
+      .map((options) => options.body.data.attributes.posts.length);
+
+    expect(bulkSizes).toEqual([50, 50, 20]);
+    expect(request.mock.calls.filter((call) => (call[0] as { url: string }).url.includes('/posts/'))).toHaveLength(0);
+    expect(posts.every((p) => TranslationState.peek(p)?.showing)).toBe(true);
+  });
+
   test('if the bulk lookup fails, everything is translated individually', async () => {
     const d = discussion('de');
     [1, 2].map((n) => post(d, n, 'de'));

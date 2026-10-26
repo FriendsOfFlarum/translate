@@ -13,6 +13,11 @@ import { filterTargets, isReadersLanguage } from './targets';
 export const THREAD_CONCURRENCY = 3;
 
 /**
+ * Post ids per bulk lookup: the most the endpoint reads (BulkTranslationsEndpoint::MAX_POSTS).
+ */
+export const BULK_LOOKUP_SIZE = 50;
+
+/**
  * The thread's loaded comment posts the hero's translate action covers, in thread
  * order: the ones a post's own translate button would offer `locale` for, and that
  * are not already showing it. Posts loaded later (by scrolling) are not included.
@@ -34,41 +39,48 @@ export function threadPostsToTranslate(discussion: Discussion, locale: string): 
 }
 
 /**
- * Every cached, current translation of the thread in one request, adopted straight
- * into the title's and posts' states. Returns what was found; a failed lookup finds
- * nothing, so everything is then translated individually.
+ * Every cached, current translation of the thread, in as few requests as the endpoint
+ * allows, adopted straight into the title's and posts' states. Returns what was found; a
+ * failed lookup finds nothing, so its posts are then translated individually.
  */
 async function adoptCached(discussion: Discussion, locale: string, posts: Post[]): Promise<{ title: boolean; posts: Set<Post> }> {
   const found = { title: false, posts: new Set<Post>() };
-
-  let records: unknown;
-
-  try {
-    const payload = await app.request<any>({
-      method: 'POST',
-      url: `${app.forum.attribute<string>('apiUrl')}/discussions/${discussion.id()}/translations`,
-      body: { data: { attributes: { locale, posts: posts.map((post) => post.id()) } } },
-      errorHandler: () => {},
-    });
-
-    records = app.store.pushPayload(payload);
-  } catch {
-    return found;
-  }
-
   const byId = new Map(posts.map((post) => [post.id(), post]));
 
-  for (const record of Array.isArray(records) ? records : []) {
-    if (record instanceof DiscussionTranslation) {
-      TranslationState.for<DiscussionTranslation>(discussion, 'discussions').adopt(record);
-      found.title = true;
-    } else if (record instanceof PostTranslation && byId.has(record.postId())) {
-      const post = byId.get(record.postId())!;
+  // At least one lookup, which also carries the title.
+  const batches: Post[][] = [];
+  for (let i = 0; i < Math.max(posts.length, 1); i += BULK_LOOKUP_SIZE) batches.push(posts.slice(i, i + BULK_LOOKUP_SIZE));
 
-      TranslationState.for<PostTranslation>(post, 'posts').adopt(record);
-      found.posts.add(post);
+  const lookup = async (batch: Post[]) => {
+    let records: unknown;
+
+    try {
+      const payload = await app.request<any>({
+        method: 'POST',
+        url: `${app.forum.attribute<string>('apiUrl')}/discussions/${discussion.id()}/translations`,
+        body: { data: { attributes: { locale, posts: batch.map((post) => post.id()) } } },
+        errorHandler: () => {},
+      });
+
+      records = app.store.pushPayload(payload);
+    } catch {
+      return;
     }
-  }
+
+    for (const record of Array.isArray(records) ? records : []) {
+      if (record instanceof DiscussionTranslation) {
+        if (!found.title) TranslationState.for<DiscussionTranslation>(discussion, 'discussions').adopt(record);
+        found.title = true;
+      } else if (record instanceof PostTranslation && byId.has(record.postId())) {
+        const post = byId.get(record.postId())!;
+
+        TranslationState.for<PostTranslation>(post, 'posts').adopt(record);
+        found.posts.add(post);
+      }
+    }
+  };
+
+  await Promise.all(batches.map(lookup));
 
   return found;
 }

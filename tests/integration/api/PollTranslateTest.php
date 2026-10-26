@@ -127,6 +127,18 @@ class PollTranslateTest extends TestCase
     }
 
     #[Test]
+    public function poll_language_is_not_detected_for_readers_who_cannot_translate(): void
+    {
+        $this->setting('fof-translate.translate-all-enabled', false);
+        $this->database()->table('group_permission')->where('permission', 'fof-translate.translate')->delete();
+
+        $response = $this->send($this->request('GET', '/api/polls/1', ['authenticatedAs' => 2]));
+
+        $this->assertSame(200, $response->getStatusCode(), (string) $response->getBody());
+        $this->assertArrayNotHasKey('detectedLang', $this->body($response)['data']['attributes']);
+    }
+
+    #[Test]
     public function poll_detected_lang_is_computed_without_queries(): void
     {
         $response = $this->send($this->request('GET', '/api/polls/1', ['authenticatedAs' => 2]));

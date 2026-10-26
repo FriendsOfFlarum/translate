@@ -6,6 +6,10 @@ import type Post from 'flarum/common/models/Post';
  */
 export declare const THREAD_CONCURRENCY = 3;
 /**
+ * Post ids per bulk lookup: the most the endpoint reads (BulkTranslationsEndpoint::MAX_POSTS).
+ */
+export declare const BULK_LOOKUP_SIZE = 50;
+/**
  * The thread's loaded comment posts the hero's translate action covers, in thread
  * order: the ones a post's own translate button would offer `locale` for, and that
  * are not already showing it. Posts loaded later (by scrolling) are not included.

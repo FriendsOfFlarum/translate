@@ -11,12 +11,15 @@
 
 namespace FoF\Translate\Api;
 
+use Flarum\Api\Context;
 use Flarum\Api\Schema;
 use FoF\Polls\Poll;
 use FoF\Translate\Detection\PollLanguage;
 
 /**
  * `detectedLang` on polls: computed with ELD (no column, no query), see PollLanguage.
+ * Detection costs CPU on every poll listed, so it only runs for readers who can translate:
+ * nobody else is offered the button that reads it.
  */
 class PollDetectedLangField
 {
@@ -30,6 +33,7 @@ class PollDetectedLangField
         return [
             Schema\Str::make('detectedLang')
                 ->nullable()
+                ->visible(fn (Poll $poll, Context $context) => $context->getActor()->can('fof-translate.translate'))
                 ->get(fn (Poll $poll) => $this->language->of($poll)),
         ];
     }

@@ -93,6 +93,28 @@ class GdprIntegrationTest extends TestCase
         $this->assertSame('A German title', $files['translations/discussion-1.json']['translations'][0]['title']);
     }
 
+    #[Test]
+    public function exporting_posts_with_mentions_costs_the_same_queries_for_any_number_of_posts(): void
+    {
+        // Two authors with nothing but mentioning posts: two posts against seven.
+        $this->extension('flarum-mentions');
+        $this->prepareDatabase([
+            User::class => [
+                ['id' => 20, 'username' => 'few', 'email' => 'few@machine.local'],
+                ['id' => 21, 'username' => 'many', 'email' => 'many@machine.local'],
+            ],
+        ]);
+        $this->prepareDatabase($this->mentioningPosts([30, 31], 20));
+        $this->prepareDatabase($this->mentioningPosts(range(40, 46), 21));
+
+        $this->export(20); // warms caches out of the comparison
+
+        $few = $this->queryCount(fn () => $this->assertCount(2, $this->export(20)));
+        $many = $this->queryCount(fn () => $this->assertCount(7, $this->export(21)));
+
+        $this->assertSame($few, $many);
+    }
+
     protected function erase(string $mode): void
     {
         if ($mode === ErasureRequest::MODE_DELETION) {

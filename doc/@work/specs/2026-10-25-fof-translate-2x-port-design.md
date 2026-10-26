@@ -205,7 +205,7 @@ Defaults are registered with `Extend\Settings()->default()`. Mind FND-017: nothi
 ## Cross-Extension Integration
 
 - Hard `require`: `flarum/core ^2.0`, `nitotm/efficient-language-detector ^3.2`, `deeplcom/deepl-php ^1.20`, `openai-php/client ^0.21`, `anthropic-ai/sdk ^1.3`. Guzzle comes with core.
-- `require-dev`: `flarum/testing ^2.0`, `flarum/phpstan ^2.0`, `fof/polls ^3.0`, `flarum/gdpr ^2.0`, `flarum/audit ^2.0`.
+- `require-dev`: `flarum/testing ^2.0`, `flarum/phpstan ^2.0`, `fof/polls ^3.0`, `flarum/gdpr ^2.0`, `flarum/audit ^2.0`, `flarum/mentions ^2.0`. Mentions is only needed by the tests that prove XML rendered outside `PostResource` (bulk lookup, GDPR export, XML repair) eager-loads the mention relations instead of looking them up per post (`Content\MentionRelations`).
 - `optional-dependencies`: `fof/polls`, `flarum/gdpr`, `flarum/audit`, for boot order (FND-026).
 - One `Extend\Conditional` (FND-189):
   - `fof-polls`: the poll resources, endpoint, staleness listener and frontend flags.

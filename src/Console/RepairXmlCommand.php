@@ -13,6 +13,7 @@ namespace FoF\Translate\Console;
 
 use Flarum\Formatter\Formatter;
 use Flarum\Post\CommentPost;
+use FoF\Translate\Content\MentionRelations;
 use FoF\Translate\Event\TranslationsRepaired;
 use FoF\Translate\Model\PostTranslation;
 use Illuminate\Console\Command;
@@ -53,7 +54,7 @@ class RepairXmlCommand extends Command
         $scanned = $corrupted = $skipped = 0;
         $ids = [];
 
-        $query->with('post')->chunkById(max(1, (int) $this->option('chunk')), function (Collection $rows) use ($formatter, $dryRun, &$scanned, &$corrupted, &$skipped, &$ids) {
+        $query->with(['post', ...MentionRelations::paths('post.')])->chunkById(max(1, (int) $this->option('chunk')), function (Collection $rows) use ($formatter, $dryRun, &$scanned, &$corrupted, &$skipped, &$ids) {
             /** @var PostTranslation $translation */
             foreach ($rows as $translation) {
                 $scanned++;

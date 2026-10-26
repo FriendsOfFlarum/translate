@@ -119,6 +119,27 @@ class BulkTranslationsTest extends TestCase
     }
 
     #[Test]
+    public function rendering_posts_with_mentions_costs_the_same_queries_for_any_page_size(): void
+    {
+        $this->extension('flarum-mentions');
+        $this->prepareDatabase($this->mentioningPosts(range(10, 16)));
+
+        $page = fn (array $ids) => $this->queryCount(fn () => $this->assertSame(200, $this->bulk(1, 'en', array_map('strval', $ids))->getStatusCode()));
+
+        $page([10]); // warms per-request caches (settings, permissions) out of the comparison
+
+        $this->assertSame($page([10, 11]), $page(range(10, 16)));
+
+        $html = collect($this->body($this->bulk(1, 'en', ['16']))['data'])
+            ->where('type', 'post-translations')
+            ->pluck('attributes.contentHtml')
+            ->first();
+
+        $this->assertStringContainsString('@member16', $html);
+        $this->assertStringContainsString('data-id="1"', $html);
+    }
+
+    #[Test]
     public function a_reader_who_cannot_see_the_source_fields_gets_neither_title_nor_posts(): void
     {
         $this->extend(

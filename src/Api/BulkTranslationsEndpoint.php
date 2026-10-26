@@ -15,6 +15,7 @@ use Flarum\Api\Context;
 use Flarum\Api\Endpoint\Endpoint;
 use Flarum\Discussion\Discussion;
 use Flarum\Post\CommentPost;
+use FoF\Translate\Content\MentionRelations;
 use FoF\Translate\Model\AbstractTranslation;
 use FoF\Translate\Model\DiscussionTranslation;
 use FoF\Translate\Model\PostTranslation;
@@ -85,7 +86,7 @@ abstract class BulkTranslationsEndpoint
             ->where('language', $locale)
             ->first();
 
-        return $row ? [$row] : [];
+        return $row ? [$row->setRelation('discussion', $discussion)] : [];
     }
 
     /**
@@ -102,8 +103,10 @@ abstract class BulkTranslationsEndpoint
 
         $postResource = $context->api->getResource('posts');
 
+        // The discussion already passed DiscussionResource's visibility scope, so post
+        // visibility can skip re-checking it for every row.
         $posts = CommentPost::query()
-            ->whereVisibleTo($context->getActor())
+            ->whereVisibleToInDiscussion($context->getActor(), $discussion)
             ->where('discussion_id', $discussion->id)
             ->where('type', CommentPost::$type)
             ->whereIn('id', $ids)
@@ -114,6 +117,8 @@ abstract class BulkTranslationsEndpoint
         if ($posts->isEmpty()) {
             return [];
         }
+
+        $posts->loadMissing(MentionRelations::paths());
 
         return static::servable(PostTranslation::query())
             ->whereIn('post_id', $posts->keys()->all())

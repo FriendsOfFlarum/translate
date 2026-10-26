@@ -127,4 +127,17 @@ class CommandsTest extends TestCase
         $this->runCommand(['command' => 'fof:translate:repair-xml', '--fix' => true]);
         $this->assertSame([2], $this->database()->table('post_translations')->where('update_needed', 1)->pluck('id')->map(fn ($id) => (int) $id)->all());
     }
+
+    #[Test]
+    public function repair_xml_renders_posts_with_mentions_at_the_same_query_cost_for_any_row_count(): void
+    {
+        $this->extension('flarum-mentions');
+        $this->prepareDatabase($this->mentioningPosts(range(10, 16)));
+
+        $repair = fn (array $ids) => $this->queryCount(fn () => $this->runCommand(['command' => 'fof:translate:repair-xml', '--ids' => implode(',', $ids)]));
+
+        $repair([10]); // boots the command and warms caches out of the comparison
+
+        $this->assertSame($repair([10, 11]), $repair(range(10, 16)));
+    }
 }

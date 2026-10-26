@@ -15,6 +15,7 @@ use Flarum\Database\Eloquent\Collection;
 use Flarum\Discussion\Discussion;
 use Flarum\Gdpr\Data\Type;
 use Flarum\Post\CommentPost;
+use FoF\Translate\Content\MentionRelations;
 use FoF\Translate\Detection\Language;
 use FoF\Translate\Model\DiscussionTranslation;
 use FoF\Translate\Model\PostTranslation;
@@ -33,6 +34,7 @@ class TranslationData extends Type
 
         // The same posts core's Posts type exports: the user's visible, non-private comments.
         CommentPost::query()
+            ->with(MentionRelations::paths())
             ->where('user_id', $this->user->id)
             ->where('type', CommentPost::$type)
             ->where('is_private', false)

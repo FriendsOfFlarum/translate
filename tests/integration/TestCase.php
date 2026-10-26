@@ -21,6 +21,7 @@ use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase as BaseTestCase;
 use Flarum\User\User;
 use FoF\Translate\Extend\TranslationDriver;
+use FoF\Translate\Model\PostTranslation;
 use FoF\Translate\Tests\fixtures\FakeBatchDriver;
 use FoF\Translate\Tests\fixtures\FakeDriver;
 use FoF\Translate\Tests\fixtures\SettingsFakeDriver;
@@ -104,6 +105,48 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $this->send($this->request('POST', "/api/$type/$id/translate", $options));
+    }
+
+    /**
+     * Comment posts in discussion 1 by `$authorId`, each mentioning its own user (same id
+     * as the post) and post 1, with a `$language` translation that keeps the mentions.
+     * Rendering or unparsing them without the mention relations loaded costs queries per
+     * post. Requires flarum-mentions.
+     *
+     * @param list<int> $ids
+     * @return array<string, list<array<string, mixed>>> for prepareDatabase()
+     */
+    protected function mentioningPosts(array $ids, int $authorId = 3, string $language = 'en'): array
+    {
+        $fixtures = [User::class => [], Post::class => [], PostTranslation::class => [], 'post_mentions_user' => [], 'post_mentions_post' => []];
+
+        foreach ($ids as $id) {
+            $mentions = '<USERMENTION displayname="member'.$id.'" id="'.$id.'">@"member'.$id.'"#'.$id.'</USERMENTION> '
+                .'<POSTMENTION displayname="author" id="1" number="1" discussionid="1">@"author"#p1</POSTMENTION>';
+
+            $fixtures[User::class][] = ['id' => $id, 'username' => "member$id", 'email' => "member$id@machine.local"];
+            $fixtures[Post::class][] = ['id' => $id, 'discussion_id' => 1, 'number' => $id, 'user_id' => $authorId, 'content' => "<r><p>$mentions hallo</p></r>", 'detected_lang' => 'de'];
+            $fixtures[PostTranslation::class][] = ['id' => $id, 'post_id' => $id, 'language' => $language, 'content' => "<r><p>$mentions hello</p></r>"];
+            $fixtures['post_mentions_user'][] = ['post_id' => $id, 'mentions_user_id' => $id];
+            $fixtures['post_mentions_post'][] = ['post_id' => $id, 'mentions_post_id' => 1];
+        }
+
+        return $fixtures;
+    }
+
+    /**
+     * Number of queries `$callback` runs.
+     */
+    protected function queryCount(callable $callback): int
+    {
+        $count = 0;
+        $this->database()->listen(function () use (&$count) {
+            $count++;
+        });
+
+        $callback();
+
+        return $count;
     }
 
     protected function body(\Psr\Http\Message\ResponseInterface $response): array

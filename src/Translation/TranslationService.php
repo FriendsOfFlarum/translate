@@ -87,7 +87,7 @@ class TranslationService
         $row = $find();
 
         if ($this->isServable($row, $refresh)) {
-            return $row;
+            return $row->setRelation('post', $post);
         }
 
         $driver = $this->driver();
@@ -128,7 +128,7 @@ class TranslationService
         $row = $find();
 
         if ($this->isServable($row, $refresh)) {
-            return $row;
+            return $row->setRelation('discussion', $discussion);
         }
 
         $driver = $this->driver();

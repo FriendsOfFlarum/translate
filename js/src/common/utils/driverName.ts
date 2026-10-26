@@ -10,6 +10,7 @@ export default function driverName(name: string): string {
     openai: () => app.translator.trans('fof-translate.lib.drivers.openai', {}, true),
     ollama: () => app.translator.trans('fof-translate.lib.drivers.ollama', {}, true),
     deepl: () => app.translator.trans('fof-translate.lib.drivers.deepl', {}, true),
+    google: () => app.translator.trans('fof-translate.lib.drivers.google', {}, true),
   };
 
   return names[name]?.() || name;

@@ -82,6 +82,7 @@ fof-translate:
       driver_recommended_option: "{driver} (recommended)"
       driver_section_heading: "{driver} settings"
       driver_self_hosted_option: "{driver} (self-hosted)"
+      driver_unofficial_option: "{driver} (free, unofficial)"
       disabled_notice: Translation is disabled until you choose and configure a translation driver below.
       english_options:
         en-GB: British English
@@ -187,7 +188,7 @@ fof-translate:
     drivers:
       claude: Claude
       deepl: DeepL
-      google: Google Translate (free, unofficial)
+      google: Google Translate
       ollama: Ollama
       openai: OpenAI
 

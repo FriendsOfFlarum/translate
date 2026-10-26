@@ -21,6 +21,8 @@ function driverOptions(): Record<string, string> {
       label = app.translator.trans('fof-translate.admin.settings.driver_recommended_option', { driver: label }, true);
     } else if (driver.name === 'ollama') {
       label = app.translator.trans('fof-translate.admin.settings.driver_self_hosted_option', { driver: label }, true);
+    } else if (driver.name === 'google') {
+      label = app.translator.trans('fof-translate.admin.settings.driver_unofficial_option', { driver: label }, true);
     }
 
     options[driver.name] = label;

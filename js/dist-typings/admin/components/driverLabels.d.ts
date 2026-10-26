@@ -1,6 +1,10 @@
 import type Mithril from 'mithril';
 import driverName from '../../common/utils/driverName';
 export { driverName };
+/**
+ * What a bundled driver uses and where to get its API key; null for third-party drivers.
+ */
+export declare function driverIntro(driver: string): Mithril.Children;
 export declare function fieldLabel(driver: string, key: string): Mithril.Children;
 /**
  * Help text for a driver field; API key fields name the environment variable that overrides them.

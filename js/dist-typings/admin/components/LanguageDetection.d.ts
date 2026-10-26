@@ -5,6 +5,7 @@ export type DetectionType = 'posts' | 'discussions';
 type Counts = Record<DetectionType, {
     total: number;
     pending: number;
+    undetermined: number;
 }>;
 interface BatchResult {
     processed: number;
@@ -55,6 +56,10 @@ export default class LanguageDetection extends Component<ILanguageDetectionAttrs
     view(): Mithril.Children;
     redetectAll(): void;
     countsView(): Mithril.Children;
+    /**
+     * `total` stays a number for the plural; the rest are formatted like the plural's `#`.
+     */
+    statusParams(count: Counts[DetectionType]): Record<string, number | string>;
     progressView(): Mithril.Children;
     summaryView(): Mithril.Children;
 }

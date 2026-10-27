@@ -1,0 +1,30 @@
+# Temporary: announces 2.0.0, which was tagged before flarum-release-notification.yml existed.
+name: Notify Flarum on Release (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        type: string
+        required: true
+      changelog:
+        type: string
+        required: true
+      release_url:
+        type: string
+        required: true
+      author:
+        type: string
+        required: true
+
+jobs:
+  notify-flarum:
+    uses: FriendsOfFlarum/extension-releases/.github/workflows/REUSABLE_flarum-release-notification.yml@2.x
+    with:
+      changelog: ${{ inputs.changelog }}
+      tag_name: ${{ inputs.tag_name }}
+      release_url: ${{ inputs.release_url }}
+      author: ${{ inputs.author }}
+      ref: refs/tags/${{ inputs.tag_name }}
+    secrets:
+      flarum_api_token: ${{ secrets.FLARUM_EXTENSION_UPDATES_API_TOKEN }}

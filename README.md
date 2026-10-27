@@ -284,7 +284,7 @@ For anything else, `addProtectionRule(string $name, string $pattern, string $typ
 ## Links
 
 - [![OpenCollective](https://img.shields.io/badge/donate-friendsofflarum-44AEE5?style=for-the-badge&logo=open-collective)](https://opencollective.com/fof/donate)
-- [Flarum Discuss post](https://discuss.flarum.org/d/PUT_DISCUSS_SLUG_HERE)
+- [Flarum Discuss post](https://discuss.flarum.org/d/40234)
 - [Source code on GitHub](https://github.com/FriendsOfFlarum/translate)
 - [Report an issue](https://github.com/FriendsOfFlarum/translate/issues)
 - [Download via Packagist](https://packagist.org/packages/fof/translate)

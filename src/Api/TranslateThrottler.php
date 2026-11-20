@@ -11,6 +11,7 @@
 
 namespace FoF\Translate\Api;
 
+use Carbon\Carbon;
 use Flarum\Http\RequestUtil;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Illuminate\Contracts\Cache\Repository as Cache;
@@ -54,7 +55,7 @@ class TranslateThrottler
             ? 'ip.'.sha1((string) $request->getAttribute('ipAddress'))
             : 'user.'.$actor->id;
 
-        $key = 'fof-translate.throttle.'.$who.'.'.intdiv(time(), self::WINDOW);
+        $key = 'fof-translate.throttle.'.$who.'.'.intdiv(Carbon::now()->getTimestamp(), self::WINDOW);
 
         $this->cache->add($key, 0, self::WINDOW * 2);
         $count = (int) $this->cache->increment($key);

@@ -71,6 +71,19 @@ export default [
     )
     .setting(
       () => ({
+        setting: 'fof-translate.post-translation-display',
+        type: 'select',
+        label: app.translator.trans('fof-translate.admin.settings.post_translation_display_label'),
+        help: app.translator.trans('fof-translate.admin.settings.post_translation_display_help'),
+        options: {
+          below: app.translator.trans('fof-translate.admin.settings.post_translation_display_options.below', {}, true),
+          replace: app.translator.trans('fof-translate.admin.settings.post_translation_display_options.replace', {}, true),
+        },
+      }),
+      75
+    )
+    .setting(
+      () => ({
         setting: 'fof-translate.use-native-locale-names',
         type: 'switch',
         label: app.translator.trans('fof-translate.admin.settings.use_native_locale_names_label'),

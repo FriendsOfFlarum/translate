@@ -83,6 +83,7 @@ return [
 
     (new Extend\Settings())
         ->default('fof-translate.translate-all-enabled', true)
+        ->default('fof-translate.post-translation-display', 'below')
         ->default('fof-translate.use-native-locale-names', false)
         ->default('fof-translate.short_content_length', 10)
         ->default('fof-translate.throttle_per_minute', 30)
@@ -104,7 +105,8 @@ return [
         ->default('fof-translate.ollama.think', 'low')
         ->default('fof-translate.ai.en_variant', 'en-GB')
         ->default('fof-translate.ai.de_variant', 'casual')
-        ->serializeToForum('fof-translate.useNativeLocaleNames', 'fof-translate.use-native-locale-names', 'boolval'),
+        ->serializeToForum('fof-translate.useNativeLocaleNames', 'fof-translate.use-native-locale-names', 'boolval')
+        ->serializeToForum('fof-translate.postTranslationDisplay', 'fof-translate.post-translation-display'),
 
     (new Extend\Conditional())
         ->whenExtensionEnabled('fof-polls', fn () => [

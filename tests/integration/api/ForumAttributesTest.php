@@ -98,6 +98,20 @@ class ForumAttributesTest extends TestCase
     }
 
     #[Test]
+    public function the_forum_payload_defaults_to_below_the_original(): void
+    {
+        $this->assertSame('below', $this->forum()['fof-translate.postTranslationDisplay']);
+    }
+
+    #[Test]
+    public function the_configured_post_translation_display_is_available_to_readers(): void
+    {
+        $this->setting('fof-translate.post-translation-display', 'replace');
+
+        $this->assertSame('replace', $this->forum()['fof-translate.postTranslationDisplay']);
+    }
+
+    #[Test]
     public function without_translate_any_language_only_the_current_locale(): void
     {
         $this->setting('fof-translate.translate-all-enabled', false);

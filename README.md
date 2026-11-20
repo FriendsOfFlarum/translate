@@ -123,6 +123,7 @@ When the OpenAI key is set through the environment, set `FOF_TRANSLATE_OPENAI_BA
 | Setting | Default | Description |
 | --- | --- | --- |
 | Allow translating into any language | On | Everyone who may translate can pick any forum language, not only their own. |
+| Post translation display | Below the original | Choose where a translated post appears after a reader clicks Translate. **Replace the original** displays one version at a time. Use **Show original** to quote the original wording or preview its post mentions. |
 | Use native language names | Off | Show language names in their own language (Deutsch, 日本語) instead of the reader's. |
 | Minimum length for language detection | 10 | Content shorter than this many characters is treated as unknown language. |
 | Translations per minute | 30 | How many translations each user (or guest IP address) may request per minute. |

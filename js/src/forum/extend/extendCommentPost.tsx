@@ -7,6 +7,7 @@ import type DiscussionTranslation from '../../common/models/DiscussionTranslatio
 import type PostTranslation from '../../common/models/PostTranslation';
 import TranslateButton from '../components/TranslateButton';
 import TranslationBlock from '../components/TranslationBlock';
+import TranslationStatus from '../components/TranslationStatus';
 import TranslationState from '../states/TranslationState';
 import { actorTargets, isReadersLanguage, primaryLanguage } from '../utils/targets';
 
@@ -56,7 +57,7 @@ export default function extendCommentPost() {
       state.onTranslate ??= (locale) => translateTitleAlongside(post, locale);
     }
 
-    // The open block carries its own close button; a lone target needs nothing more.
+    // An open translation includes a way back to the original.
     if (state.showing && available.length === 1) return;
 
     items.add('fof-translate', <TranslateButton state={state} targets={targets} source={source} />, 5);
@@ -74,18 +75,27 @@ export default function extendCommentPost() {
       return;
     }
 
-    content.push(
-      <TranslationBlock
-        className="PostTranslation"
-        state={state}
-        source={post.detectedLang?.() ?? null}
-        body={(translation: PostTranslation) => [
-          <div className="Post-body TranslationBlock-content">{m.trust(translation.contentHtml())}</div>,
-          translation.isStale() && (
-            <p className="TranslationBlock-stale helpText">{app.translator.trans('fof-translate.forum.translation.stale_text')}</p>
-          ),
-        ]}
-      />
-    );
+    const source = post.detectedLang?.() ?? null;
+    const body = (translation: PostTranslation) => [
+      <div className="Post-body TranslationBlock-content" lang={translation.language()}>
+        {m.trust(translation.contentHtml())}
+      </div>,
+      translation.isStale() && (
+        <p className="TranslationBlock-stale helpText">{app.translator.trans('fof-translate.forum.translation.stale_text')}</p>
+      ),
+    ];
+
+    const translation = state.active();
+    if (translation?.contentHtml()?.trim() && app.forum.attribute('fof-translate.postTranslationDisplay') === 'replace') {
+      content.push(
+        <div className="PostTranslation--inPlace">
+          {body(translation)}
+          <TranslationStatus className="PostTranslation-status" state={state} source={source} />
+        </div>
+      );
+      return;
+    }
+
+    content.push(<TranslationBlock className="PostTranslation" state={state} source={source} body={body} />);
   });
 }

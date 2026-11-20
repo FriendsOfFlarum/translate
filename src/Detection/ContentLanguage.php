@@ -15,15 +15,16 @@ use Closure;
 use Flarum\Settings\SettingsRepositoryInterface;
 
 /**
- * The detection rules shared by save-time listeners and the backfill. Every method
- * returns the value to store: a language code, or Language::UNDETERMINED.
+ * The detection rules shared by save-time listeners and the backfill.
  *
- * Text too short for the detector ("Danke!", "+1") takes the author's forum locale;
- * text long enough but ambiguous stays undetermined; no text at all (an image-only
- * post) stays undetermined.
+ * Short text ("Danke!", "+1") can take the author's forum locale. A post with
+ * no text, such as an image-only post, stays undetermined.
  */
 class ContentLanguage
 {
+    // ELD samples only the first 1,000 bytes, so a longer table could hide a conflicting language.
+    protected const MAX_TABLE_SAMPLE_BYTES = 1000;
+
     public function __construct(
         protected LanguageDetector $detector,
         protected SettingsRepositoryInterface $settings,
@@ -45,7 +46,38 @@ class ContentLanguage
             return Language::toStored($this->resolve($authorLocale));
         }
 
-        return Language::toStored($this->detector->detect($text));
+        return Language::toStored($this->detector->detect($text) ?? $this->detectOutsideTable($xml ?? ''));
+    }
+
+    protected function detectOutsideTable(string $xml): ?string
+    {
+        $tableXml = '';
+        $proseXml = preg_replace_callback('#<TABLE(?=[\s>])[^>]*>.*?</TABLE>#is', static function (array $match) use (&$tableXml): string {
+            $tableXml = $match[0];
+
+            return ' ';
+        }, $xml, -1, $tableCount);
+
+        if ($tableCount !== 1 || $proseXml === null || preg_match('#</?TABLE(?=[\s/>])#i', $proseXml)) {
+            return null;
+        }
+
+        $prose = PlainText::fromXml($proseXml);
+        $table = PlainText::fromXml($tableXml);
+
+        // A short caption is not representative of a post whose text is mostly in a table.
+        if (strlen($table) > self::MAX_TABLE_SAMPLE_BYTES || mb_strlen($prose) < mb_strlen($table) || $this->isTooShort($prose)) {
+            return null;
+        }
+
+        $language = $this->detector->detect($prose);
+        if ($language === null) {
+            return null;
+        }
+
+        $tableLanguage = $this->detector->detect($table);
+
+        return $tableLanguage === null || $tableLanguage === $language ? $language : null;
     }
 
     /**

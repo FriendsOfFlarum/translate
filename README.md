@@ -218,7 +218,9 @@ The migrations only copy data. They never change or delete what `ianm/translate`
 
 **`fof:translate:detect`**
 
-Posts and discussion titles are detected automatically when they are saved, so this is only needed for content written before the extension was enabled (for example after upgrading from `ianm/translate`). Without options it processes both posts and discussions that have never been checked. Content too short to classify (shorter than the *short content length* setting) is assumed to be in the language its author uses the forum in, which is their chosen locale or the forum default. Content that is long enough but ambiguous, or that has no text at all, is recorded as undetermined and skipped on later runs unless `--force` is used. Polls need no backfill: their language is detected when they are displayed.
+Posts and discussion titles are detected automatically when they are saved, so this is only needed for content written before the extension was enabled (for example after upgrading from `ianm/translate`). Without options it processes both posts and discussions that have never been checked. Content too short to classify (shorter than the *short content length* setting) is assumed to be in the language its author uses the forum in, which is their chosen locale or the forum default. Content that remains ambiguous, or that has no text at all, is recorded as undetermined and skipped on later runs unless `--force` is used. Polls need no backfill because their language is detected when displayed.
+
+If the full text of a post with one formatted table is ambiguous, post detection can retry using the surrounding prose. The command `php flarum fof:translate:detect --posts --force` rechecks all posts and can overwrite languages learned from translation providers.
 
 The same backfill can be run from the admin panel: **FoF Translate → Language detection** shows how much content is still unchecked and runs the detection in batches with a progress bar.
 

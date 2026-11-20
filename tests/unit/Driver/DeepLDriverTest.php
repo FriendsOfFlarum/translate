@@ -140,12 +140,24 @@ class DeepLDriverTest extends DriverTestCase
     #[Test]
     public function target_languages_are_two_letter_and_unique(): void
     {
-        $driver = $this->driver(responses: [$this->json([
-            ['language' => 'DE', 'name' => 'German', 'supports_formality' => true],
-            ['language' => 'EN-GB', 'name' => 'English (British)', 'supports_formality' => false],
-            ['language' => 'EN-US', 'name' => 'English (American)', 'supports_formality' => false],
-            ['language' => 'ZH-HANS', 'name' => 'Chinese (simplified)', 'supports_formality' => false],
-        ])]);
+        $languages = [
+            'DE' => 'German',
+            'EN-GB' => 'English (British)',
+            'EN-US' => 'English (American)',
+            'ZH-HANS' => 'Chinese (simplified)',
+        ];
+
+        // SDK 1.20 reads v2 language entries; SDK 1.21 reads v3 entries.
+        $response = array_map(static fn (string $code, string $name) => [
+            'language' => $code,
+            'lang' => strtolower($code),
+            'name' => $name,
+            'status' => 'stable',
+            'usable_as_source' => true,
+            'usable_as_target' => true,
+        ], array_keys($languages), array_values($languages));
+
+        $driver = $this->driver(responses: [$this->json($response)]);
 
         $this->assertSame(['de', 'en', 'zh'], $driver->targetLanguages());
     }

@@ -137,7 +137,7 @@ When the OpenAI key is set through the environment, set `FOF_TRANSLATE_OPENAI_BA
 | Translate into any forum language (`fof-translate.translateAnyLanguage`) | Moderator | Pick any forum language the driver supports. |
 | Refresh cached translations (`fof-translate.refresh`) | Admin only | Force a fresh translation even when the cached one is current. Human-edited translations are never replaced. |
 
-While **Allow translating into any language** is on (the default), everyone with *Translate content* can also translate into any forum language. Turn it off to limit that to groups holding *Translate into any forum language*.
+While **Allow translating into any language** is on (the default), everyone with *Translate content* can also translate into any forum language. When it is off, readers without *Translate into any forum language* get a direct button when a translation into their current language is available. Administrators and groups with that permission, including moderators by default, can still see the language menu. Check the reader-facing behavior with a regular member or guest account.
 
 ## Privacy and auditing
 
@@ -145,7 +145,9 @@ While **Allow translating into any language** is on (the default), everyone with
 
 When someone asks for a translation, the text of that post, title or poll is sent to the driver's service: Anthropic (Claude), OpenAI or the configured OpenAI-compatible gateway, DeepL or Google. Post translations can also include the discussion title. Post and title translations can include an excerpt of the opening post. A gateway can forward this content to its upstream model provider. The extension does not include the reader's or author's account details. Language detection runs on your server.
 
-If you use a hosted driver, mention that service in your privacy policy.
+Forum content can contain personal information even when the request includes no account details. Before enabling a hosted driver, check the terms and data processing options for your exact service and plan, including any upstream provider behind a gateway. Describe the service and the content it receives in your forum's privacy policy.
+
+The Google Translate driver uses the unofficial web endpoint. If you need the terms and data processing options of a contracted API, choose a different driver. For DeepL, check the terms for your API plan, including its rules for processing personal information. [DeepL privacy policy](https://www.deepl.com/en/privacy)
 
 ### flarum/gdpr
 
@@ -204,7 +206,7 @@ The migrations only copy data. They never change or delete what `ianm/translate`
 
 ### Behaviour change: target languages
 
-`ianm/translate` 1.x only ever offered the reader's current language, because of a bug. `fof/translate` offers every forum language the driver supports, unless your permissions or the **Allow translating into any language** setting restrict it. If you want readers limited to their own language, turn that setting off.
+`ianm/translate` 1.x only ever offered the reader's current language, because of a bug. To limit regular readers to their own language in `fof/translate`, turn off **Allow translating into any language** and check which groups hold *Translate into any forum language*. See [Permissions](#permissions) for the administrator and moderator defaults.
 
 ## Console commands
 

@@ -128,6 +128,11 @@ fof-translate:
         max_tokens_label: Maximum tokens
         model_help: The chat model ID or gateway model alias used for translation.
         model_label: Model
+      post_translation_display_help: Where a translation appears after the reader clicks Translate.
+      post_translation_display_label: Post translation display
+      post_translation_display_options:
+        below: Below the original
+        replace: Replace the original
       short_content_length_help: Content shorter than this many characters is too short to detect its language reliably. It is assumed to be in the language its author uses the forum in, which is their chosen locale, or the forum default.
       short_content_length_label: Minimum length for language detection
       throttle_per_minute_help: How many translations each user (or guest IP address) may request per minute.

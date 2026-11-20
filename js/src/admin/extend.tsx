@@ -7,7 +7,7 @@ import DriverSettings from './components/DriverSettings';
 import GlossaryEditor from './components/GlossaryEditor';
 import LanguageDetection from './components/LanguageDetection';
 import { driverName } from './components/driverLabels';
-import { drivers, RECOMMENDED_DRIVER } from './components/drivers';
+import { drivers, findDriver, RECOMMENDED_DRIVER } from './components/drivers';
 
 function driverOptions(): Record<string, string> {
   const options: Record<string, string> = {
@@ -35,6 +35,17 @@ export default [
   ...commonExtend,
 
   new Extend.Admin()
+    .generalIndexItems('settings', () => [
+      {
+        id: 'fof-translate.openai.base_url',
+        label: app.translator.trans('fof-translate.admin.settings.openai.base_url_label', {}, true),
+        help: app.translator.trans('fof-translate.admin.settings.openai.base_url_help', {}, true),
+        visible: () => {
+          const field = findDriver(app.data.settings['fof-translate.driver'])?.fields.base_url;
+          return app.data.settings['fof-translate.driver'] === 'openai' && !!field && !field.envOverride;
+        },
+      },
+    ])
     .customSetting(() => <DriverNotice />, 1000)
     .setting(
       () => ({

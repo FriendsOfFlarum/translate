@@ -38,8 +38,11 @@ class OpenAIDriver extends AbstractAiDriver
 
     public function settingsFields(): array
     {
+        $apiKey = $this->apiKeyField();
+
         return [
-            'api_key' => $this->apiKeyField(),
+            'api_key' => $apiKey,
+            'base_url' => ['type' => 'url', 'required' => false, 'envOverride' => $apiKey['envOverride'] ?? false],
             'model' => ['type' => 'string', 'required' => false],
             'max_tokens' => ['type' => 'number', 'required' => false],
             'timeout' => ['type' => 'number', 'required' => false],
@@ -105,8 +108,8 @@ class OpenAIDriver extends AbstractAiDriver
             ],
         ];
 
-        // Reasoning models (o-series, gpt-5) reject any temperature but the default.
-        if (preg_match('/^(gpt-4|gpt-3\.5|chatgpt-4o)/i', $model)) {
+        // Reasoning models can reject temperature, and a gateway alias can point to any model.
+        if ($this->baseUrl() === null && preg_match('/^(gpt-4|gpt-3\.5|chatgpt-4o)/i', $model)) {
             $payload['temperature'] = 0.3;
         }
 
@@ -122,13 +125,51 @@ class OpenAIDriver extends AbstractAiDriver
                 throw new TranslationFailedException('OpenAI is not configured: no API key.');
             }
 
-            $this->client = OpenAI::factory()
+            $factory = OpenAI::factory()
                 ->withApiKey($apiKey)
-                ->withHttpClient($this->httpClient($this->numberSetting('timeout', self::DEFAULT_TIMEOUT, 5, 600)))
-                ->make();
+                ->withHttpClient($this->httpClient($this->numberSetting('timeout', self::DEFAULT_TIMEOUT, 5, 600)));
+
+            if (($baseUrl = $this->baseUrl()) !== null) {
+                $baseUri = self::normalizeBaseUrl($baseUrl);
+                if ($baseUri === null) {
+                    throw new TranslationFailedException('Invalid OpenAI API base URL. Use an HTTP or HTTPS URL without credentials, a query, or a fragment.');
+                }
+
+                $factory->withBaseUri($baseUri);
+            }
+
+            $this->client = $factory->make();
         }
 
         return $this->client;
+    }
+
+    public static function normalizeBaseUrl(string $url): ?string
+    {
+        $url = trim($url);
+        $parts = parse_url($url);
+        $scheme = strtolower($parts['scheme'] ?? '');
+
+        if (! in_array($scheme, ['http', 'https'], true)
+            || ! filter_var($url, FILTER_VALIDATE_URL)
+            || isset($parts['user']) || isset($parts['query']) || isset($parts['fragment'])) {
+            return null;
+        }
+
+        return $scheme.substr(rtrim($url, '/'), strlen($scheme));
+    }
+
+    protected function baseUrl(): ?string
+    {
+        if ($this->envApiKey() === null) {
+            return $this->stringSetting('base_url');
+        }
+
+        // Keep a server-managed key bound to a server-managed destination.
+        $variable = 'FOF_TRANSLATE_OPENAI_BASE_URL';
+        $value = $_ENV[$variable] ?? $_SERVER[$variable] ?? getenv($variable);
+
+        return is_string($value) && trim($value) !== '' ? trim($value) : null;
     }
 
     protected function httpClient(float $timeout): ClientInterface

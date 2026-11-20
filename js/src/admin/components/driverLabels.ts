@@ -21,6 +21,10 @@ const fieldTexts: Record<string, FieldText> = {
     help: () => app.translator.trans('fof-translate.admin.settings.timeout_help'),
   },
   'openai.api_key': { label: () => app.translator.trans('fof-translate.admin.settings.openai.api_key_label') },
+  'openai.base_url': {
+    label: () => app.translator.trans('fof-translate.admin.settings.openai.base_url_label'),
+    help: () => app.translator.trans('fof-translate.admin.settings.openai.base_url_help'),
+  },
   'openai.model': {
     label: () => app.translator.trans('fof-translate.admin.settings.openai.model_label'),
     help: () => app.translator.trans('fof-translate.admin.settings.openai.model_help'),

@@ -19,6 +19,7 @@ use Flarum\Extend;
 use Flarum\Gdpr\Extend\UserData;
 use Flarum\Post\Event\Saving as PostSaving;
 use Flarum\Post\Post;
+use Flarum\Settings\Event\Saving as SettingsSaving;
 use FoF\Polls\Api\Resource\PollResource;
 
 return [
@@ -46,6 +47,7 @@ return [
     (new Extend\Event())
         ->listen(PostSaving::class, Listener\DetectPostLanguage::class)
         ->listen(DiscussionSaving::class, Listener\DetectDiscussionLanguage::class)
+        ->listen(SettingsSaving::class, Listener\ValidateOpenAIBaseUrl::class)
         ->subscribe(Listener\MarkTranslationsStale::class),
 
     (new Extend\Policy())
@@ -90,6 +92,7 @@ return [
         ->default('fof-translate.deepl.en_choice', 'en-US')
         ->default('fof-translate.deepl.pt_choice', 'pt-BR')
         ->default('fof-translate.deepl.model_type', 'prefer_quality_optimized')
+        ->default('fof-translate.openai.base_url', '')
         ->default('fof-translate.openai.model', 'gpt-4o')
         ->default('fof-translate.openai.max_tokens', 4096)
         ->default('fof-translate.openai.timeout', 30)

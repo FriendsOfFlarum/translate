@@ -44,6 +44,26 @@ class AdminTest extends TestCase
     }
 
     #[Test]
+    public function invalid_openai_base_url_cannot_replace_a_working_setting(): void
+    {
+        $key = 'fof-translate.openai.base_url';
+        $valid = 'https://gateway.example:3443/v1';
+        $this->assertSame(204, $this->send($this->request('POST', '/api/settings', [
+            'authenticatedAs' => 1,
+            'json' => [$key => $valid],
+        ]))->getStatusCode());
+
+        $this->assertSame(422, $this->send($this->request('POST', '/api/settings', [
+            'authenticatedAs' => 1,
+            'json' => [$key => $valid.'?query=value'],
+        ]))->getStatusCode());
+
+        $response = $this->send($this->request('GET', '/admin', ['authenticatedAs' => 1]));
+        $this->assertStringContainsString($valid, str_replace('\\/', '/', (string) $response->getBody()));
+        $this->assertStringNotContainsString('query=value', (string) $response->getBody());
+    }
+
+    #[Test]
     public function glossaries_endpoint_is_admin_only(): void
     {
         $this->assertSame(403, $this->send($this->request('GET', '/api/fof-translate/deepl/glossaries', ['authenticatedAs' => 2]))->getStatusCode());

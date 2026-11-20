@@ -17,6 +17,8 @@ use FoF\Translate\Driver\TranslationFailedException;
 use FoF\Translate\Driver\TranslationRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\BackupGlobals;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Client\ClientInterface;
 use Psr\Log\NullLogger;
@@ -79,7 +81,7 @@ class OpenAIDriverTest extends DriverTestCase
         $request = $this->lastRequest();
         $body = $this->lastRequestBody();
 
-        $this->assertStringEndsWith('/v1/chat/completions', (string) $request->getUri());
+        $this->assertSame('https://api.openai.com/v1/chat/completions', (string) $request->getUri());
         $this->assertSame('Bearer sk-test', $request->getHeaderLine('Authorization'));
         $this->assertSame('gpt-4o', $body['model']);
         $this->assertSame(2048, $body['max_completion_tokens']);
@@ -91,6 +93,85 @@ class OpenAIDriverTest extends DriverTestCase
         $this->assertStringContainsString('American English (en-US)', $body['messages'][0]['content']);
         $this->assertStringContainsString('"Flarum"', $body['messages'][0]['content']);
         $this->assertStringContainsString('__12345_C_0__', $body['messages'][0]['content']);
+    }
+
+    #[Test]
+    public function sends_chat_completions_to_the_configured_base_url(): void
+    {
+        $driver = $this->driver(
+            ['fof-translate.openai.base_url' => 'HTTPS://gateway.example:3443/v1/'],
+            [$this->completion('{"translation":"Hallo","source_language":"en"}')]
+        );
+
+        $driver->translate(new TranslationRequest('Hello', 'de'));
+
+        $this->assertSame('https://gateway.example:3443/v1/chat/completions', (string) $this->lastRequest()->getUri());
+    }
+
+    #[Test]
+    #[BackupGlobals(true)]
+    #[DataProvider('serverManagedEndpoints')]
+    public function sends_environment_keys_only_to_the_server_configured_endpoint(?string $serverUrl, string $expected): void
+    {
+        $_ENV['FOF_TRANSLATE_OPENAI_API_KEY'] = 'server-key';
+        $_ENV['FOF_TRANSLATE_OPENAI_BASE_URL'] = $serverUrl ?? '';
+
+        $driver = $this->driver(
+            ['fof-translate.openai.base_url' => 'https://admin.example/v1'],
+            [$this->completion('{"translation":"Hallo","source_language":"en"}')]
+        );
+
+        $driver->translate(new TranslationRequest('Hello', 'de'));
+
+        $this->assertSame($expected, (string) $this->lastRequest()->getUri());
+        $this->assertSame('Bearer server-key', $this->lastRequest()->getHeaderLine('Authorization'));
+    }
+
+    public static function serverManagedEndpoints(): array
+    {
+        return [
+            'OpenAI by default' => [null, 'https://api.openai.com/v1/chat/completions'],
+            'server-selected gateway' => ['https://server.example:3443/v1', 'https://server.example:3443/v1/chat/completions'],
+        ];
+    }
+
+    #[Test]
+    #[DataProvider('invalidBaseUrls')]
+    public function rejects_invalid_base_urls_before_sending_the_request(string $url): void
+    {
+        $driver = $this->driver(['fof-translate.openai.base_url' => $url]);
+
+        try {
+            $driver->translate(new TranslationRequest('Hello', 'de'));
+            $this->fail('Expected the driver to reject the URL.');
+        } catch (TranslationFailedException $error) {
+            $this->assertStringContainsString('Invalid OpenAI API base URL', $error->getMessage());
+            $this->assertSame([], $this->history);
+        }
+    }
+
+    public static function invalidBaseUrls(): array
+    {
+        return [
+            'slashes' => ['///'],
+            'query' => ['https://gateway.example/v1?foo=bar'],
+            'fragment' => ['https://gateway.example/v1#anchor'],
+            'non-HTTP scheme' => ['ftp://gateway.example/v1'],
+            'embedded credentials' => ['https://user:password@gateway.example/v1'],
+        ];
+    }
+
+    #[Test]
+    public function gateway_model_aliases_use_the_gateway_temperature_default(): void
+    {
+        $driver = $this->driver([
+            'fof-translate.openai.base_url' => 'https://gateway.example/v1',
+            'fof-translate.openai.model' => 'gpt-4o',
+        ], [$this->completion('{"translation":"Hallo","source_language":"en"}')]);
+
+        $driver->translate(new TranslationRequest('Hello', 'de'));
+
+        $this->assertArrayNotHasKey('temperature', $this->lastRequestBody());
     }
 
     #[Test]

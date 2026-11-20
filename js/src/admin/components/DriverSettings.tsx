@@ -68,7 +68,9 @@ export default class DriverSettings extends Component<IDriverSettingsAttrs> {
             <Icon name="fas fa-server" />{' '}
             {key === 'api_key'
               ? app.translator.trans('fof-translate.admin.settings.env_override_named', { env: <code>{envVar(driver.name, key)}</code> })
-              : app.translator.trans('fof-translate.admin.settings.env_override')}
+              : driver.name === 'openai' && key === 'base_url'
+                ? app.translator.trans('fof-translate.admin.settings.openai.base_url_env_help', { env: <code>{envVar(driver.name, key)}</code> })
+                : app.translator.trans('fof-translate.admin.settings.env_override')}
           </p>
         </div>
       );

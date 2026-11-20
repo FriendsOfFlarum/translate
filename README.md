@@ -59,7 +59,7 @@ Open the extension's settings page in the admin panel. Nothing is translated unt
 | Driver | Best for | Settings |
 | --- | --- | --- |
 | **Claude** (recommended) | Highest translation quality, context-aware | API key, model, effort, timeout |
-| **OpenAI** | Forums already using OpenAI | API key, model (default `gpt-4o`), maximum tokens, timeout |
+| **OpenAI** | Forums using OpenAI or an OpenAI-compatible gateway | API key, optional API base URL, model (default `gpt-4o`), maximum tokens, timeout |
 | **Ollama** (self-hosted) | Keeping content on your own servers | Server URL, model, optional API token, timeout |
 | **DeepL** | Dedicated machine translation with glossaries | API key, formality, English variant, Portuguese variant, model type, glossaries |
 | **Google Translate** (free, unofficial) | Trying the extension out, small forums | None |
@@ -72,7 +72,9 @@ Open the extension's settings page in the admin panel. Nothing is translated unt
 
 #### OpenAI
 
-- **Model:** any OpenAI chat model ID (default `gpt-4o`).
+- **API base URL:** leave blank to use OpenAI. For an OpenAI-compatible gateway such as LiteLLM, enter its API base URL (for example, `https://gateway.example/v1`). The driver appends `/chat/completions`. Use HTTPS for remote gateways to encrypt the API key and translation content in transit.
+- **API key:** use the key issued by OpenAI or by your gateway.
+- **Model:** an OpenAI chat model ID (default `gpt-4o`) or the model alias configured on your gateway. The model must accept Chat Completions requests with a strict JSON schema via `response_format` and the `max_completion_tokens` parameter.
 - **Maximum tokens:** the upper limit on the length of each translation (default 4096).
 - **Timeout:** in seconds (default 30).
 
@@ -114,6 +116,8 @@ You can enter API keys on the settings page or set them as environment variables
 
 The legacy `IANM_TRANSLATE_{DRIVER}_API_KEY` variables from `ianm/translate` are still honoured.
 
+When the OpenAI key is set through the environment, set `FOF_TRANSLATE_OPENAI_BASE_URL` on the server to use a gateway. In this mode the driver ignores the admin URL and uses OpenAI when the server URL is blank.
+
 ### Other settings
 
 | Setting | Default | Description |
@@ -138,7 +142,7 @@ While **Allow translating into any language** is on (the default), everyone with
 
 ### Where content goes
 
-When someone asks for a translation, the text of that post, title or poll is sent to the driver's service: Anthropic (Claude), OpenAI, DeepL or Google. With Ollama it stays on your own server. Only the text is sent, never the reader's or the author's account details. Language detection runs on your server and sends nothing.
+When someone asks for a translation, the text of that post, title or poll is sent to the driver's service: Anthropic (Claude), OpenAI or the configured OpenAI-compatible gateway, DeepL or Google. Post translations can also include the discussion title. Post and title translations can include an excerpt of the opening post. A gateway can forward this content to its upstream model provider. The extension does not include the reader's or author's account details. Language detection runs on your server.
 
 If you use a hosted driver, mention that service in your privacy policy.
 
